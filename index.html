@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Noemie Ducly</title>
+  <link rel="icon" type="image/png" href="assets/favicon/Group 1.png" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header class="site-header">
+    <a href="index.html" class="nav-logo">Noemie Ducly</a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="directors.html">Work</a></li>
+        <li><a href="about.html" class="hide-mobile">About</a></li>
+      </ul>
+    </nav>
+    <span class="nav-contact">noemie.ducly@gmail.com</span>
+  </header>
+
+  <!-- HERO -->
+  <section class="hero">
+    <video class="hero-video" id="hero-video" autoplay muted loop playsinline>
+      <source src="assets/tomake_METAL.mp4" type="video/mp4" />
+    </video>
+    <div class="hero-content">
+      <div>
+<h2 class="hero-title">
+          <a href="video.html?slug=nike-unveil" id="hero-link">To Make &mdash; Graduation project</a>
+        </h2>
+      </div>
+      <div class="hero-dots" id="hero-dots"></div>
+    </div>
+  </section>
+
+  <!-- PROJECT GALLERY -->
+  <section class="works-section">
+    <div class="works-grid" id="works-grid"></div>
+  </section>
+
+  <footer class="work-page-footer">
+    <span>2026 Noemie Ducly</span>
+    <span>Paris &mdash; France</span>
+  </footer>
+
+  <script src="data.js"></script>
+  <script>
+    // Seeded shuffle — fixed order across reloads
+    function seededShuffle(arr, seed) {
+      const a = [...arr];
+      let s = seed;
+      for (let i = a.length - 1; i > 0; i--) {
+        s = (s * 1664525 + 1013904223) & 0xffffffff;
+        const j = Math.abs(s) % (i + 1);
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    // ── Hero slideshow ──
+    const heroProjects = seededShuffle(FEATURED_PROJECTS, 42).slice(0, 5);
+    const heroVideo = document.getElementById('hero-video');
+    const heroLink = document.getElementById('hero-link');
+    const heroDirector = document.getElementById('hero-director');
+    const dotsContainer = document.getElementById('hero-dots');
+
+    let heroIndex = 0;
+    let heroTimer = null;
+    const seen = new Set();
+
+    // Build dots
+    heroProjects.forEach((_, i) => {
+      const dot = document.createElement('div');
+      dot.className = 'hero-dot';
+      dot.innerHTML = '<span class="hero-dot-fill"></span>';
+      dot.addEventListener('click', () => goTo(i));
+      dotsContainer.appendChild(dot);
+    });
+
+    function goTo(index) {
+      heroIndex = index;
+      const p = heroProjects[index];
+      heroVideo.querySelector('source').src = p.video;
+      heroVideo.load();
+      heroVideo.play();
+      heroLink.href = 'video.html?slug=' + p.slug;
+      heroLink.textContent = p.client + ' \u2014 ' + p.title;
+      if (heroDirector) heroDirector.textContent = 'Noemie Ducly';
+      if (index === 0) seen.clear();
+      seen.add(index);
+      document.querySelectorAll('.hero-dot').forEach((d, i) => {
+        d.classList.remove('active');
+        const fill = d.querySelector('.hero-dot-fill');
+        fill.style.animation = 'none';
+        fill.offsetHeight; // force reflow
+        fill.style.animation = '';
+        if (i === index) {
+          d.classList.add('active');
+        } else if (seen.has(i)) {
+          fill.style.width = '100%';
+        } else {
+          fill.style.width = '0%';
+        }
+      });
+      clearInterval(heroTimer);
+      heroTimer = setInterval(() => goTo((heroIndex + 1) % heroProjects.length), 4000);
+    }
+
+    goTo(0);
+
+    // ── Works grid ──
+    const grid = document.getElementById('works-grid');
+
+    const shuffled = seededShuffle(FEATURED_PROJECTS, 99);
+
+    function imgHtml(src, cls, alt) {
+      const webp = src.replace(/\.(jpg|jpeg|png)$/i, '.webp');
+      return `<picture><source srcset="${webp}" type="image/webp"><img class="${cls}" src="${src}" alt="${alt}"></picture>`;
+    }
+
+    shuffled.forEach(p => {
+      const item = document.createElement('div');
+      item.className = 'work-item';
+
+      item.innerHTML = `
+        <a href="video.html?slug=${p.slug}" class="work-thumb-wrap">
+          <div class="work-thumb" style="${!p.image ? 'background:#000;' : ''}">
+            ${p.image ? imgHtml(p.image, 'work-img', p.title) : ''}
+            ${p.video ? `<video class="work-video" muted playsinline loop><source src="${p.video}" type="video/mp4" /></video>` : ''}
+          </div>
+        </a>
+        <p class="work-label">${p.client} &mdash; ${p.title}</p>
+      `;
+
+      const video = item.querySelector('.work-video');
+      const thumb = item.querySelector('.work-thumb');
+
+
+      grid.appendChild(item);
+    });
+
+    // Scroll animation
+    const workItems = Array.from(document.querySelectorAll('.work-item'));
+    const workObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const i = workItems.indexOf(entry.target);
+          setTimeout(() => entry.target.classList.add('visible'), i * 80);
+          workObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0, rootMargin: '0px 0px -50px 0px' });
+
+    workItems.forEach(el => workObserver.observe(el));
+  </script>
+</body>
+</html>

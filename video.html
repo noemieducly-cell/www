@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Film | Noemie Ducly</title>
+  <link rel="icon" type="image/png" href="assets/favicon/Group 1.png" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    body { overflow-x: hidden; }
+
+    /* ── Full screen video section ── */
+    .video-player-page {
+      position: relative;
+      width: 100%;
+      height: 100vh;
+      background: #000;
+      overflow: hidden;
+    }
+
+    /* ── Description section ── */
+    .project-desc {
+      background: #fff;
+      padding: 20px 32px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 80px;
+      align-items: start;
+    }
+
+    .project-desc-left {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .project-desc-meta {
+      display: flex;
+      gap: 32px;
+    }
+
+    .project-desc-meta-item {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .project-desc-meta-label {
+      font-size: 8.5px;
+      letter-spacing: 0.1em;
+      opacity: 0.4;
+      text-transform: uppercase;
+    }
+
+    .project-desc-meta-value {
+      font-size: 11px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .project-desc-right {
+      font-size: 13px;
+      line-height: 1.7;
+      letter-spacing: 0.03em;
+      text-transform: none;
+      color: var(--text);
+      opacity: 0.75;
+      padding-top: 6px;
+    }
+
+    /* ── WIP grid ── */
+    .wip-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 0;
+    }
+
+    .wip-grid-item {
+      aspect-ratio: 4 / 3;
+      overflow: hidden;
+      background: #e8e8e8;
+    }
+
+    .wip-grid-item.wip-full {
+      grid-column: 1 / -1;
+      aspect-ratio: 21 / 9;
+    }
+
+    .wip-grid-item img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .wip-placeholder {
+      width: 100%;
+      height: 100%;
+      background: #ececec;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8.5px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text);
+      opacity: 0.25;
+    }
+
+    .wip-grid-item {
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+
+    .wip-grid-item.visible {
+      opacity: 1;
+    }
+
+    /* ── Hero slideshow ── */
+    .hero-slideshow {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    .hero-slide {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+      display: block;
+    }
+
+    .hero-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .hero-slide.active {
+      opacity: 1;
+    }
+
+    /* ── WIP grid picture wrapper ── */
+    .wip-grid-item picture {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* ── WIP loop column ── */
+    .wip-loop-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      padding: 96px 32px 96px;
+    }
+
+    .wip-loop-item {
+      width: 100%;
+      overflow: hidden;
+      opacity: 0;
+      transition: opacity 0.6s ease;
+      margin: 50px 0;
+    }
+
+    .wip-loop-item.visible {
+      opacity: 1;
+    }
+
+    .wip-loop-item video {
+      width: 100%;
+      display: block;
+    }
+
+    @media (max-width: 768px) {
+      .wip-loop-grid {
+        padding: 5px 20px 0;
+      }
+    }
+
+    /* ── Project navigation ── */
+    .project-nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 32px 48px;
+      border-top: none;
+    }
+
+    .project-nav a {
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text);
+      opacity: 0.5;
+      text-decoration: none;
+      transition: opacity 0.2s;
+    }
+
+    .project-nav a:hover { opacity: 1; }
+
+    .project-nav-prev::before { content: '← '; }
+    .project-nav-next::after  { content: ' →'; }
+
+    .project-nav--top { padding-bottom: 16px; }
+
+    @media (max-width: 768px) {
+      .project-desc {
+        grid-template-columns: 1fr;
+        gap: 32px;
+        padding: 48px 20px 60px;
+      }
+      .wip-grid {
+        grid-template-columns: 1fr;
+      }
+      .project-nav .project-nav-prev,
+      .project-nav .project-nav-next {
+        font-size: 0 !important;
+      }
+      .project-nav .project-nav-prev::before {
+        content: '← Previous project';
+        font-size: 11px;
+        letter-spacing: 0.1em;
+      }
+      .project-nav .project-nav-next::after {
+        content: 'Next project →';
+        font-size: 11px;
+        letter-spacing: 0.1em;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Fixed close button — outside player-page to avoid transform containing block -->
+  <button class="player-close" id="btn-close">&#10005; Close</button>
+
+  <div class="video-player-page" id="player-page">
+    <video id="main-video" autoplay loop playsinline>
+      <source src="" type="video/mp4" />
+    </video>
+    <iframe id="vimeo-embed" style="display:none;position:absolute;inset:0;width:100%;height:100%;border:none;" allowfullscreen allow="autoplay; fullscreen"></iframe>
+
+    <div class="player-ui">
+      <div class="player-top">
+        <div style="width:80px"></div>
+      </div>
+      <div class="player-bottom">
+        <div class="player-meta">
+          <span class="player-director" id="player-director">&nbsp;</span>
+          <span class="player-project" id="player-project">&nbsp;</span>
+        </div>
+        <div class="player-controls" id="player-controls">
+          <button class="control-btn play-btn" id="btn-play" title="Play / Pause">&#10074;&#10074;</button>
+          <button class="control-btn" id="btn-sound" title="Toggle sound">Sound off</button>
+          <button class="control-btn" id="btn-fs" title="Fullscreen">&#x26F6;</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Description -->
+  <section class="project-desc" id="project-desc">
+    <div class="project-desc-left">
+      <div class="project-desc-meta" id="desc-meta"></div>
+    </div>
+    <p class="project-desc-right" id="desc-text"></p>
+  </section>
+
+  <!-- WIP loop column -->
+  <div class="wip-loop-grid" id="wip-loop-grid"></div>
+
+  <!-- Project navigation (top) -->
+  <nav class="project-nav project-nav--top">
+    <a class="project-nav-prev" id="nav-prev-top" href="#"></a>
+    <a class="project-nav-next" id="nav-next-top" href="#"></a>
+  </nav>
+
+  <!-- WIP grid -->
+  <div class="wip-grid" id="wip-grid"></div>
+
+  <!-- Project navigation (bottom) -->
+  <nav class="project-nav">
+    <a class="project-nav-prev" id="nav-prev" href="#"></a>
+    <a class="project-nav-next" id="nav-next" href="#"></a>
+  </nav>
+
+  <footer class="work-page-footer">
+    <span>2026 Noemie Ducly</span>
+    <span>Paris &mdash; France</span>
+  </footer>
+
+  <script>
+    // Force fresh load of data.js
+    document.write('<script src="data.js?v=' + Date.now() + '"><\/script>');
+  </script>
+  <script>
+    function imgHtml(src, cls, alt) {
+      const isImg = /\.(jpg|jpeg|png)$/i.test(src);
+      if (!isImg) return `<img${cls ? ` class="${cls}"` : ''} src="${src}" alt="${alt || ''}">`;
+      const webp = src.replace(/\.(jpg|jpeg|png)$/i, '.webp');
+      return `<picture><source srcset="${webp}" type="image/webp"><img${cls ? ` class="${cls}"` : ''} src="${src}" alt="${alt || ''}"></picture>`;
+    }
+
+    function seededShuffle(arr, seed) {
+      const a = [...arr];
+      let s = seed;
+      for (let i = a.length - 1; i > 0; i--) {
+        s = (s * 1664525 + 1013904223) & 0xffffffff;
+        const j = Math.abs(s) % (i + 1);
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+
+    const params = new URLSearchParams(window.location.search);
+    const slug = params.get('slug');
+    const video = document.getElementById('main-video');
+    const btnClose = document.getElementById('btn-close');
+    const btnPlay = document.getElementById('btn-play');
+    const btnSound = document.getElementById('btn-sound');
+    const btnFs = document.getElementById('btn-fs');
+    const playerDirector = document.getElementById('player-director');
+    const playerProject = document.getElementById('player-project');
+
+    let projectData = null;
+    let currentIndex = -1;
+
+    if (slug) {
+      currentIndex = FEATURED_PROJECTS.findIndex(p => p.slug === slug);
+      if (currentIndex !== -1) projectData = FEATURED_PROJECTS[currentIndex];
+    }
+
+    if (projectData) {
+      document.title = projectData.title + ' | Noemie Ducly';
+      playerDirector.textContent = projectData.client;
+      playerProject.textContent = projectData.title;
+
+      if (projectData.vimeoUrl) {
+        // Vimeo embed
+        const vimeoId = projectData.vimeoUrl.match(/vimeo\.com\/(\d+)/);
+        if (vimeoId) {
+          const vimeoEmbed = document.getElementById('vimeo-embed');
+          vimeoEmbed.src = `https://player.vimeo.com/video/${vimeoId[1]}?autoplay=1&loop=1&autopause=0`;
+          vimeoEmbed.style.display = 'block';
+          video.style.display = 'none';
+          document.getElementById('player-controls').style.display = 'none';
+        }
+      } else if (!projectData.video) {
+        // No video — show slideshow or static image
+        video.style.display = 'none';
+        document.getElementById('player-controls').style.display = 'none';
+        const slides = projectData.slides || (projectData.image ? [projectData.image] : []);
+        if (slides.length > 0) {
+          const slideshowEl = document.createElement('div');
+          slideshowEl.className = 'hero-slideshow';
+          slides.forEach((src, i) => {
+            const isImg = /\.(jpg|jpeg|png)$/i.test(src);
+            let el;
+            if (isImg) {
+              const webp = src.replace(/\.(jpg|jpeg|png)$/i, '.webp');
+              el = document.createElement('picture');
+              el.innerHTML = `<source srcset="${webp}" type="image/webp"><img src="${src}" alt="slide">`;
+            } else {
+              el = document.createElement('img');
+              el.src = src;
+            }
+            el.className = 'hero-slide' + (i === 0 ? ' active' : '');
+            slideshowEl.appendChild(el);
+          });
+          document.getElementById('player-page').appendChild(slideshowEl);
+          if (slides.length > 1) {
+            let slideIndex = 0;
+            setInterval(() => {
+              const allSlides = slideshowEl.querySelectorAll('.hero-slide');
+              allSlides[slideIndex].classList.remove('active');
+              slideIndex = (slideIndex + 1) % slides.length;
+              allSlides[slideIndex].classList.add('active');
+            }, 3000);
+          }
+        }
+      } else {
+      const videoSrcs = (projectData.videos && projectData.videos.length > 1) ? projectData.videos : null;
+      let playlistIndex = 0;
+      video.querySelector('source').src = projectData.video;
+      video.load();
+      video.play();
+      if (videoSrcs) {
+        video.removeAttribute('loop');
+        video.addEventListener('ended', () => {
+          playlistIndex = (playlistIndex + 1) % videoSrcs.length;
+          video.querySelector('source').src = videoSrcs[playlistIndex];
+          video.load();
+          video.play();
+        });
+      }
+      } // end else (not vimeo)
+
+      // Custom WIP ratio
+      if (projectData.wipRatio) {
+        const style = document.createElement('style');
+        let css = `.wip-grid-item { aspect-ratio: ${projectData.wipRatio} !important; }`;
+        if (projectData.wipVideoRatio) {
+          css += ` .wip-grid-item.wip-full { aspect-ratio: ${projectData.wipVideoRatio} !important; grid-column: auto; }`;
+        }
+        style.textContent = css;
+        document.head.appendChild(style);
+      }
+
+      // Description
+      document.getElementById('desc-meta').innerHTML = `
+        <div class="project-desc-meta-item">
+          <span class="project-desc-meta-label">Year</span>
+          <span class="project-desc-meta-value">${projectData.year || '2024'}</span>
+        </div>
+        <div class="project-desc-meta-item">
+          <span class="project-desc-meta-label">Role</span>
+          <span class="project-desc-meta-value">${projectData.role || 'Creative Direction, CGI'}</span>
+        </div>
+      `;
+      document.getElementById('desc-text').innerHTML = projectData.description.replace(/\n/g, '<br>');
+
+      // WIP grid
+      const wipGrid = document.getElementById('wip-grid');
+      let wips = projectData.wips || [];
+      if (projectData.wipShuffle) {
+        const wipSeed = (projectData.slug || '').split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+        wips = seededShuffle(wips, wipSeed);
+      }
+      if (wips.length > 0) {
+        wips.forEach(src => {
+          const cell = document.createElement('div');
+          cell.className = 'wip-grid-item';
+          const isVideo = /\.(mp4|webm|mov)$/i.test(src);
+          if (isVideo && !projectData.wipRatio) cell.classList.add('wip-full');
+          cell.innerHTML = isVideo
+            ? `<video src="${src}" autoplay muted loop playsinline style="width:100%;height:100%;object-fit:cover;display:block;"></video>`
+            : imgHtml(src, '', 'WIP');
+          wipGrid.appendChild(cell);
+        });
+      } else {
+        // Placeholders (6 cells)
+        for (let i = 0; i < 6; i++) {
+          const cell = document.createElement('div');
+          cell.className = 'wip-grid-item';
+          cell.innerHTML = `<div class="wip-placeholder">WIP</div>`;
+          wipGrid.appendChild(cell);
+        }
+      }
+
+      // WIP loop column
+      const wipLoopGrid = document.getElementById('wip-loop-grid');
+      const wipsLoop = projectData.wipsLoop || [];
+
+      wipsLoop.forEach(item => {
+        const src = typeof item === 'string' ? item : item.src;
+        const mt = typeof item === 'object' && item.mt ? item.mt : 0;
+        const mb = typeof item === 'object' && item.mb ? item.mb : 0;
+        const cell = document.createElement('div');
+        cell.className = 'wip-loop-item';
+        if (mt) cell.style.marginTop = mt + 'px';
+        if (mb) cell.style.marginBottom = mb + 'px';
+        cell.innerHTML = `<video src="${src}" autoplay muted loop playsinline></video>`;
+        wipLoopGrid.appendChild(cell);
+      });
+
+      // Prev / Next navigation
+      const nextIndex = (currentIndex + 1) % FEATURED_PROJECTS.length;
+      const prevIndex = (currentIndex - 1 + FEATURED_PROJECTS.length) % FEATURED_PROJECTS.length;
+      const next = FEATURED_PROJECTS[nextIndex];
+      const prev = FEATURED_PROJECTS[prevIndex];
+      ['nav-next', 'nav-next-top'].forEach(id => {
+        document.getElementById(id).href = 'video.html?slug=' + next.slug;
+        document.getElementById(id).textContent = next.client + ' \u2014 ' + next.title;
+      });
+      ['nav-prev', 'nav-prev-top'].forEach(id => {
+        document.getElementById(id).href = 'video.html?slug=' + prev.slug;
+        document.getElementById(id).textContent = prev.client + ' \u2014 ' + prev.title;
+      });
+
+    } else if (slug) {
+      const result = getProject(slug);
+      if (result) {
+        const { director, project } = result;
+        document.title = director.name + ' | ' + project.client + ' | Noemie Ducly';
+        playerDirector.textContent = director.name;
+        playerProject.textContent = project.client + ' \u2014 ' + project.title;
+        if (director.localVideo) {
+          video.querySelector('source').src = director.localVideo;
+          video.load();
+          video.play();
+        }
+      }
+    }
+
+    // Close
+    btnClose.addEventListener('click', () => {
+      if (document.referrer) history.back();
+      else window.location.href = 'directors.html';
+    });
+
+    // Play / Pause
+    let playing = true;
+    btnPlay.addEventListener('click', () => {
+      playing ? (video.pause(), btnPlay.innerHTML = '&#9654;') : (video.play(), btnPlay.innerHTML = '&#10074;&#10074;');
+      playing = !playing;
+    });
+
+    // Sound
+    let muted = true;
+    video.muted = true;
+    btnSound.addEventListener('click', () => {
+      muted = !muted;
+      video.muted = muted;
+      btnSound.textContent = muted ? 'Sound off' : 'Sound on';
+    });
+
+    // Fullscreen
+    btnFs.addEventListener('click', () => {
+      if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
+      else document.exitFullscreen();
+    });
+
+    video.addEventListener('click', () => btnPlay.click());
+
+    // Scroll animation for WIP items
+    const wipItems = Array.from(document.querySelectorAll('.wip-grid-item'));
+    if (projectData && projectData.wipInstant) {
+      wipItems.forEach(el => el.classList.add('visible'));
+    } else {
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          const i = wipItems.indexOf(entry.target);
+          if (entry.isIntersecting) {
+            setTimeout(() => entry.target.classList.add('visible'), i * 80);
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.1 });
+      wipItems.forEach(el => observer.observe(el));
+    }
+
+    // Scroll animation for WIP loop items
+    const wipLoopItems = Array.from(document.querySelectorAll('.wip-loop-item'));
+    const loopObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const i = wipLoopItems.indexOf(entry.target);
+          setTimeout(() => entry.target.classList.add('visible'), i * 60);
+          loopObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    wipLoopItems.forEach(el => loopObserver.observe(el));
+  </script>
+</body>
+</html>

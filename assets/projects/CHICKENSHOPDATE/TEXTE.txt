@@ -1,0 +1,16 @@
+//nom du projet//
+Chicken Shop Date 
+
+//nom du client//
+Amelia Dimoldenberg
+
+//description//
+Fictional title sequence project for Chicken Shop Date interviews by Amelia Dimoldenberg.
+Concept and animation with THOMAS DI SCALA. 
+
+
+//année//
+2025
+
+//role//
+Creative Direction, CGI

@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir \"C:/Users/noemi/Desktop/NoemieSite2/assets/projects/TO MAKE - METAL\")",
+      "Bash(python3 -c ':*)",
+      "Bash(grep -v '\\\\.drx$')",
+      "Bash(cwebp -version)",
+      "Bash(ffmpeg -version)",
+      "Bash(node -e \"console.log\\('node ok'\\)\" npm list -g sharp)",
+      "Bash(python -c \"from PIL import Image; print\\('pillow ok'\\)\")",
+      "Bash(python -m pip install Pillow --quiet)",
+      "Bash(python)",
+      "Bash(python -c ' *)"
+    ]
+  }
+}

@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Awards | NOEMIE DUCLY</title>
+  <link rel="icon" type="image/png" href="assets/favicon/Group 1.png" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <header class="site-header">
+    <a href="index.html" class="nav-logo">Noemie Ducly</a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="directors.html">Work</a></li>
+        <li><a href="about.html" class="hide-mobile">About</a></li>
+      </ul>
+    </nav>
+    <a href="contact.html" class="nav-contact">Contact</a>
+  </header>
+
+  <div class="page">
+    <div class="page-heading">
+      <h1>Awards</h1>
+    </div>
+    <div class="awards-list" id="awards-list"></div>
+  </div>
+
+  <footer class="site-footer">
+    <p>&copy; 2026 Noemie Ducly</p>
+    <p>US &middot; NL &middot; APAC &middot; FR &middot; UK</p>
+  </footer>
+
+  <script src="data.js"></script>
+  <script>
+    const list = document.getElementById('awards-list');
+
+    AWARDS.forEach(award => {
+      const row = document.createElement('div');
+      row.className = 'award-row';
+
+      row.innerHTML = `
+        <div class="award-header">
+          <div class="award-left">
+            <span class="award-festival">${award.festival}</span>
+            <span class="award-total">${award.total} ${award.unit}</span>
+          </div>
+          <span class="award-highlight">${award.highlight}</span>
+          <span class="award-toggle">+</span>
+        </div>
+        <div class="award-projects">
+          ${award.projects.map(p => `
+            <div class="award-project-item">
+              <span class="award-project-title">${p.title}</span>
+              <span class="award-project-desc">${p.description}</span>
+            </div>
+          `).join('')}
+        </div>
+      `;
+
+      row.querySelector('.award-header').addEventListener('click', () => {
+        const isOpen = row.classList.contains('open');
+        // Close all
+        document.querySelectorAll('.award-row.open').forEach(r => r.classList.remove('open'));
+        if (!isOpen) row.classList.add('open');
+      });
+
+      list.appendChild(row);
+    });
+  </script>
+</body>
+</html>

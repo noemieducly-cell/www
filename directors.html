@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Work | Noemie Ducly</title>
+  <link rel="icon" type="image/png" href="assets/favicon/Group 1.png" />
+  <link rel="stylesheet" href="style.css" />
+  <style>
+    .work-page {
+      padding-top: var(--nav-h);
+    }
+
+    /* ── Filter bar ── */
+    .work-filter-bar {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      padding: 0 32px;
+      height: 44px;
+    }
+
+    .work-filter-btn {
+      font-family: var(--font);
+      font-size: 10px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text);
+      opacity: 0.35;
+      background: none;
+      border: none;
+      cursor: pointer;
+      padding: 0;
+      transition: opacity 0.2s;
+    }
+
+    .work-filter-btn.active,
+    .work-filter-btn:hover {
+      opacity: 1;
+    }
+
+    /* ── Grid ── */
+    .work-page-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 48px 6px;
+      padding: 4px 0;
+    }
+
+    .work-page-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Thumbnail ── */
+    .work-page-thumb {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background: #e0e0e0;
+      cursor: pointer;
+      display: block;
+    }
+
+    .work-page-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .work-page-video {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.4s ease;
+    }
+
+    .work-page-thumb:hover .work-page-video {
+      opacity: 1;
+    }
+
+    /* ── Label ── */
+    .work-page-meta {
+      display: flex;
+      justify-content: center;
+      align-items: baseline;
+      gap: 8px;
+      margin: 4px 10px 0;
+    }
+    .work-page-label {
+      font-size: 9.5px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: none;
+      color: var(--text);
+      opacity: 1;
+      line-height: 1.2;
+    }
+    .work-page-client {
+      font-size: 9.5px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text);
+      opacity: 0.5;
+      line-height: 1.2;
+    }
+
+
+    /* ── Scroll animation ── */
+    .work-page-item {
+      opacity: 0;
+      transition: opacity 0.6s ease;
+    }
+
+    .work-page-item.visible {
+      opacity: 1;
+    }
+
+    /* ── Responsive ── */
+@media (max-width: 768px) {
+      .work-filter-bar {
+        padding: 0 20px;
+        gap: 20px;
+        overflow-x: auto;
+        scrollbar-width: none;
+      }
+      .work-filter-bar::-webkit-scrollbar { display: none; }
+
+      .work-page-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 32px 16px;
+        padding: 20px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .work-page-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+        padding: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <header class="site-header">
+    <a href="index.html" class="nav-logo">Noemie Ducly</a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="directors.html" class="active">Work</a></li>
+        <li><a href="about.html" class="hide-mobile">About</a></li>
+      </ul>
+    </nav>
+    <span class="nav-contact">noemie.ducly@gmail.com</span>
+  </header>
+
+  <section class="work-page">
+    <div class="work-filter-bar">
+      <button class="work-filter-btn active" data-filter="All">All</button>
+      <button class="work-filter-btn" data-filter="Creative Direction">Realisation</button>
+      <button class="work-filter-btn" data-filter="CGI">CGI</button>
+      <button class="work-filter-btn" data-filter="VFX">VFX</button>
+      <button class="work-filter-btn" data-filter="Photography">Photography</button>
+      <button class="work-filter-btn" data-filter="Graphic Design">Graphic Design</button>
+    </div>
+    <div class="work-page-grid" id="work-page-grid"></div>
+  </section>
+
+  <footer class="work-page-footer">
+    <span>2026 Noemie Ducly</span>
+    <span>Paris — France</span>
+  </footer>
+
+  <script src="data.js"></script>
+  <script>
+    // Seeded shuffle
+    function seededShuffle(arr, seed) {
+      const a = [...arr];
+      let s = seed;
+      for (let i = a.length - 1; i > 0; i--) {
+        s = (s * 1664525 + 1013904223) & 0xffffffff;
+        const j = Math.abs(s) % (i + 1);
+        [a[i], a[j]] = [a[j], a[i]];
+      }
+      return a;
+    }
+    function strSeed(str) {
+      return str.split('').reduce((acc, c) => acc + c.charCodeAt(0), 0);
+    }
+
+    // Filter buttons
+    document.querySelectorAll('.work-filter-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.work-filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const filter = btn.dataset.filter;
+        const grid = document.getElementById('work-page-grid');
+        const allItems = Array.from(document.querySelectorAll('.work-page-item'));
+
+        // Get matching items and shuffle them with a filter-specific seed
+        const matching = allItems.filter(item => {
+          const tags = item.dataset.tags ? item.dataset.tags.split(',') : [];
+          return filter === 'All' || tags.includes(filter);
+        });
+        const nonMatching = allItems.filter(item => !matching.includes(item));
+
+        const shuffled = seededShuffle(matching, strSeed(filter));
+
+        // Re-append in new order
+        shuffled.forEach(el => { el.style.display = ''; grid.appendChild(el); });
+        nonMatching.forEach(el => { el.style.display = 'none'; grid.appendChild(el); });
+      });
+    });
+
+    // Build grid
+    const grid = document.getElementById('work-page-grid');
+
+    function imgHtml(src, cls, alt) {
+      const webp = src.replace(/\.(jpg|jpeg|png)$/i, '.webp');
+      return `<picture><source srcset="${webp}" type="image/webp"><img class="${cls}" src="${src}" alt="${alt}"></picture>`;
+    }
+
+    FEATURED_PROJECTS.forEach(p => {
+      const item = document.createElement('div');
+      item.className = 'work-page-item';
+      item.dataset.tags = (p.tags || []).join(',');
+      item.innerHTML = `
+        <a href="video.html?slug=${p.slug}" class="work-page-thumb" style="${!p.image ? 'background:#000;' : ''}">
+          ${p.image ? imgHtml(p.image, 'work-page-img', p.title) : ''}
+          ${p.video ? `<video class="work-page-video" muted playsinline loop><source src="${p.video}" type="video/mp4" /></video>` : ''}
+        </a>
+        <div class="work-page-meta">
+          <span class="work-page-client">${p.client}</span>
+          <span class="work-page-label">${p.title}</span>
+        </div>
+      `;
+
+      const video = item.querySelector('.work-page-video');
+      const thumb = item.querySelector('.work-page-thumb');
+      if (video) {
+        thumb.addEventListener('mouseenter', () => video.play().catch(() => {}));
+        thumb.addEventListener('mouseleave', () => { video.pause(); video.currentTime = 0; });
+      }
+
+      grid.appendChild(item);
+    });
+
+    // Apply initial "All" seed order on load
+    const allItemsInit = Array.from(document.querySelectorAll('.work-page-item'));
+    seededShuffle(allItemsInit, strSeed('All')).forEach(el => grid.appendChild(el));
+
+    // Load animation
+    const workItems = Array.from(document.querySelectorAll('.work-page-item'));
+    workItems.forEach((el, i) => {
+      setTimeout(() => el.classList.add('visible'), i * 80);
+    });
+  </script>
+</body>
+</html>

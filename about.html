@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en" style="height: 100%;">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Contact | NOEMIE DUCLY</title>
+  <link rel="icon" type="image/png" href="assets/favicon/Group 1.png" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body style="height: 100%; display: flex; flex-direction: column;">
+
+  <header class="site-header">
+    <a href="index.html" class="nav-logo">Noemie Ducly</a>
+    <nav>
+      <ul class="nav-links">
+        <li><a href="directors.html">Work</a></li>
+        <li><a href="about.html" class="active hide-mobile">About</a></li>
+      </ul>
+    </nav>
+    <span class="nav-contact">noemie.ducly@gmail.com</span>
+  </header>
+
+  <div class="page" id="page" style="flex: 1;"></div>
+
+  <footer class="work-page-footer">
+    <span>2026 Noemie Ducly</span>
+    <span>Paris &mdash; France</span>
+  </footer>
+
+  <script src="data.js?v=2"></script>
+  <script>
+    const page = document.getElementById('page');
+    const c = CONTACT;
+
+    page.innerHTML = `
+      <p class="contact-intro">${c.intro}</p>
+
+      <div class="contact-inquiries">
+        ${c.inquiries.map(inq => {
+          const isEmail = inq.email.includes('@') && !inq.email.startsWith('@') && inq.email.includes('.');
+          const isInstagram = inq.email.startsWith('@');
+          let valueHtml;
+          if (isEmail) {
+            valueHtml = `<a class="inquiry-email" href="mailto:${inq.email}">${inq.email}</a>`;
+          } else if (isInstagram) {
+            valueHtml = `<a class="inquiry-email" href="https://instagram.com/${inq.email.slice(1)}" target="_blank">${inq.email}</a>`;
+          } else {
+            valueHtml = `<span class="inquiry-email">${inq.email}</span>`;
+          }
+          return `
+          <div class="inquiry-item">
+            <span class="inquiry-label">${inq.label}</span>
+            ${valueHtml}
+          </div>`;
+        }).join('')}
+      </div>
+
+    `;
+
+    // Inject socials into footer
+    const footerLeft = document.querySelector('.work-page-footer span:first-child');
+    if (footerLeft) {
+      footerLeft.style.display = 'flex';
+      footerLeft.style.gap = '24px';
+      footerLeft.innerHTML = c.socials.map(s => `<a href="${s.url}" target="_blank" rel="noopener">${s.label}</a>`).join('');
+    }
+  </script>
+</body>
+</html>

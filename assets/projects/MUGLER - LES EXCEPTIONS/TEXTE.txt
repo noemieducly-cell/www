@@ -1,0 +1,16 @@
+//nom du projet//
+Les exceptions
+
+//nom du client//
+Mugler
+
+//description//
+Fictional teaser project for the fragrances Les Exceptions by Mugler.
+Concept with FARIC CHEN & THOMAS DI SCALA.
+Music: Grief Seed by Lili Castiglioni.
+
+//année//
+2026
+
+//Category//
+CREATIVE DIRECTION, CGI
