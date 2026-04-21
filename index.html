@@ -11,11 +11,11 @@
 
   <!-- HEADER -->
   <header class="site-header">
-    <a href="index" class="nav-logo">Noemie Ducly</a>
+    <a href="index.html" class="nav-logo">Noemie Ducly</a>
     <nav>
       <ul class="nav-links">
-        <li><a href="work">Work</a></li>
-        <li><a href="about" class="hide-mobile">About</a></li>
+        <li><a href="work.html">Work</a></li>
+        <li><a href="about.html" class="hide-mobile">About</a></li>
       </ul>
     </nav>
     <button class="nav-contact" onclick="navigator.clipboard.writeText('noemie.ducly@gmail.com').then(()=>{this.textContent='Copied !';setTimeout(()=>this.textContent='noemie.ducly@gmail.com',1500)})">noemie.ducly@gmail.com</button>
@@ -29,7 +29,7 @@
     <div class="hero-content">
       <div>
 <h2 class="hero-title">
-          <a href="video?slug=to-make-metal" id="hero-link">To Make &mdash; Graduation project</a>
+          <a href="video.html?slug=to-make-metal" id="hero-link">To Make &mdash; Graduation project</a>
         </h2>
       </div>
       <div class="hero-dots" id="hero-dots"></div>
@@ -86,7 +86,7 @@
       heroVideo.querySelector('source').src = p.video;
       heroVideo.load();
       heroVideo.play();
-      heroLink.href = 'video?slug=' + p.slug;
+      heroLink.href = 'video.html?slug=' + p.slug;
       heroLink.textContent = p.client + ' \u2014 ' + p.title;
       if (heroDirector) heroDirector.textContent = 'Noemie Ducly';
       if (index === 0) seen.clear();
@@ -126,7 +126,7 @@
       item.className = 'work-item';
 
       item.innerHTML = `
-        <a href="video?slug=${p.slug}" class="work-thumb-wrap">
+        <a href="video.html?slug=${p.slug}" class="work-thumb-wrap">
           <div class="work-thumb" style="${!p.image ? 'background:#000;' : ''}">
             ${p.image ? imgHtml(p.image, 'work-img', p.title) : ''}
             ${p.video ? `<video class="work-video" muted playsinline loop><source src="${p.video}" type="video/mp4" /></video>` : ''}
