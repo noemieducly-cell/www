@@ -108,11 +108,6 @@
     }
 
     .wip-grid-item {
-      opacity: 0;
-      transition: opacity 0.6s ease;
-    }
-
-    .wip-grid-item.visible {
       opacity: 1;
     }
 
@@ -162,13 +157,8 @@
     .wip-loop-item {
       width: 100%;
       overflow: hidden;
-      opacity: 0;
-      transition: opacity 0.6s ease;
-      margin: 50px 0;
-    }
-
-    .wip-loop-item.visible {
       opacity: 1;
+      margin: 50px 0;
     }
 
     .wip-loop-item video {
@@ -208,6 +198,68 @@
 
     .project-nav--top { padding-bottom: 16px; }
 
+    /* ── Lightbox ── */
+    .lightbox {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 2000;
+      background: rgba(0,0,0,0.92);
+      align-items: center;
+      justify-content: center;
+    }
+    .lightbox.open { display: flex; }
+
+    .lightbox-img {
+      max-width: 98vw;
+      max-height: 98vh;
+      object-fit: contain;
+      display: block;
+      user-select: none;
+    }
+
+    .lightbox-close {
+      position: fixed;
+      top: 24px;
+      left: 32px;
+      font-family: var(--font);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #fff;
+      background: none;
+      border: none;
+      cursor: pointer;
+      z-index: 2001;
+    }
+
+    .lightbox-prev,
+    .lightbox-next {
+      position: fixed;
+      top: 50%;
+      transform: translateY(-50%);
+      font-family: var(--font);
+      font-size: 11px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: #fff;
+      background: none;
+      border: none;
+      cursor: pointer;
+      z-index: 2001;
+      opacity: 0.5;
+      transition: opacity 0.2s;
+    }
+    .lightbox-prev:hover, .lightbox-next:hover { opacity: 1; }
+    .lightbox-prev { left: 32px; top: 50%; }
+    .lightbox-next { right: 32px; }
+
+    @media (max-width: 768px) {
+      .lightbox-close { top: 20px; left: 20px; }
+      .lightbox-prev { left: 16px; }
+      .lightbox-next { right: 16px; }
+    }
+
     @media (max-width: 768px) {
       .project-desc {
         grid-template-columns: 1fr;
@@ -238,6 +290,14 @@
 
   <!-- Fixed close button — outside player-page to avoid transform containing block -->
   <button class="player-close" id="btn-close">&#10005; Close</button>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox">
+    <button class="lightbox-close" id="lightbox-close">&#10005; Close</button>
+    <button class="lightbox-prev" id="lightbox-prev">&#8592;</button>
+    <img class="lightbox-img" id="lightbox-img" src="" alt="">
+    <button class="lightbox-next" id="lightbox-next">&#8594;</button>
+  </div>
 
   <div class="video-player-page" id="player-page">
     <video id="main-video" autoplay loop playsinline>
@@ -345,15 +405,24 @@
         const vimeoId = projectData.vimeoUrl.match(/vimeo\.com\/(\d+)/);
         if (vimeoId) {
           const vimeoEmbed = document.getElementById('vimeo-embed');
-          vimeoEmbed.src = `https://player.vimeo.com/video/${vimeoId[1]}?autoplay=1&loop=1&autopause=0`;
+          vimeoEmbed.src = `https://player.vimeo.com/video/${vimeoId[1]}?title=0&byline=0&portrait=0&color=ffffff`;
           vimeoEmbed.style.display = 'block';
           video.style.display = 'none';
           document.getElementById('player-controls').style.display = 'none';
+          document.querySelector('.player-meta').style.display = 'none';
+          document.querySelector('.player-ui').style.pointerEvents = 'none';
+          // Inject title above year/role in desc section
+          const descLeft = document.querySelector('.project-desc-left');
+          const titleEl = document.createElement('div');
+          titleEl.className = 'vimeo-title-block';
+          titleEl.innerHTML = `<span class="player-director" style="font-size:11px;letter-spacing:0.095em;opacity:0.5;display:block;margin-bottom:4px;">${projectData.client}</span><span class="player-project" style="font-size:18px;letter-spacing:0.038em;text-transform:none;display:block;">${projectData.title}</span>`;
+          descLeft.insertBefore(titleEl, descLeft.firstChild);
         }
       } else if (!projectData.video) {
         // No video — show slideshow or static image
         video.style.display = 'none';
-        document.getElementById('player-controls').style.display = 'none';
+        document.getElementById('btn-play').style.display = 'none';
+        document.getElementById('btn-sound').style.display = 'none';
         const slides = projectData.slides || (projectData.image ? [projectData.image] : []);
         if (slides.length > 0) {
           const slideshowEl = document.createElement('div');
@@ -468,6 +537,13 @@
         wipLoopGrid.appendChild(cell);
       });
 
+      // Move nav-top above loop grid for this specific project
+      if (projectData.slug === 'off-the-room-2') {
+        const navTop = document.querySelector('.project-nav--top');
+        const loopGrid = document.getElementById('wip-loop-grid');
+        loopGrid.parentNode.insertBefore(navTop, loopGrid);
+      }
+
       // Prev / Next navigation
       const nextIndex = (currentIndex + 1) % FEATURED_PROJECTS.length;
       const prevIndex = (currentIndex - 1 + FEATURED_PROJECTS.length) % FEATURED_PROJECTS.length;
@@ -499,8 +575,7 @@
 
     // Close
     btnClose.addEventListener('click', () => {
-      if (document.referrer) history.back();
-      else window.location.href = 'directors.html';
+      window.location.href = 'work.html';
     });
 
     // Play / Pause
@@ -521,41 +596,61 @@
 
     // Fullscreen
     btnFs.addEventListener('click', () => {
-      if (!document.fullscreenElement) document.documentElement.requestFullscreen().catch(() => {});
+      const target = document.getElementById('player-page');
+      if (!document.fullscreenElement) target.requestFullscreen().catch(() => {});
       else document.exitFullscreen();
     });
 
     video.addEventListener('click', () => btnPlay.click());
 
-    // Scroll animation for WIP items
-    const wipItems = Array.from(document.querySelectorAll('.wip-grid-item'));
-    if (projectData && projectData.wipInstant) {
-      wipItems.forEach(el => el.classList.add('visible'));
-    } else {
-      const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-          const i = wipItems.indexOf(entry.target);
-          if (entry.isIntersecting) {
-            setTimeout(() => entry.target.classList.add('visible'), i * 80);
-            observer.unobserve(entry.target);
-          }
-        });
-      }, { threshold: 0.1 });
-      wipItems.forEach(el => observer.observe(el));
+    // Show all WIP items immediately
+    document.querySelectorAll('.wip-grid-item').forEach(el => el.classList.add('visible'));
+
+    // Lightbox
+    const lightbox = document.getElementById('lightbox');
+    const lightboxImg = document.getElementById('lightbox-img');
+    let lightboxImages = [];
+    let lightboxIndex = 0;
+
+    function openLightbox(index) {
+      lightboxIndex = index;
+      lightboxImg.src = lightboxImages[lightboxIndex];
+      lightbox.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+    function closeLightbox() {
+      lightbox.classList.remove('open');
+      document.body.style.overflow = '';
+    }
+    function lightboxStep(dir) {
+      lightboxIndex = (lightboxIndex + dir + lightboxImages.length) % lightboxImages.length;
+      lightboxImg.src = lightboxImages[lightboxIndex];
     }
 
-    // Scroll animation for WIP loop items
-    const wipLoopItems = Array.from(document.querySelectorAll('.wip-loop-item'));
-    const loopObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const i = wipLoopItems.indexOf(entry.target);
-          setTimeout(() => entry.target.classList.add('visible'), i * 60);
-          loopObserver.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0.1 });
-    wipLoopItems.forEach(el => loopObserver.observe(el));
+    // Collect WIP image cells and add click listeners
+    document.querySelectorAll('.wip-grid-item').forEach(cell => {
+      const img = cell.querySelector('img');
+      if (!img) return;
+      const src = img.src;
+      const idx = lightboxImages.length;
+      lightboxImages.push(src);
+      cell.style.cursor = 'zoom-in';
+      cell.addEventListener('click', () => openLightbox(idx));
+    });
+
+    document.getElementById('lightbox-close').addEventListener('click', closeLightbox);
+    document.getElementById('lightbox-prev').addEventListener('click', () => lightboxStep(-1));
+    document.getElementById('lightbox-next').addEventListener('click', () => lightboxStep(1));
+    lightbox.addEventListener('click', e => { if (e.target === lightbox) closeLightbox(); });
+    document.addEventListener('keydown', e => {
+      if (!lightbox.classList.contains('open')) return;
+      if (e.key === 'Escape') closeLightbox();
+      if (e.key === 'ArrowLeft') lightboxStep(-1);
+      if (e.key === 'ArrowRight') lightboxStep(1);
+    });
+
+    // Show all WIP loop items immediately
+    document.querySelectorAll('.wip-loop-item').forEach(el => el.classList.add('visible'));
   </script>
 </body>
 </html>

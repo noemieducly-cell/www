@@ -14,11 +14,11 @@
     <a href="index.html" class="nav-logo">Noemie Ducly</a>
     <nav>
       <ul class="nav-links">
-        <li><a href="directors.html">Work</a></li>
+        <li><a href="work.html">Work</a></li>
         <li><a href="about.html" class="hide-mobile">About</a></li>
       </ul>
     </nav>
-    <span class="nav-contact">noemie.ducly@gmail.com</span>
+    <button class="nav-contact" onclick="navigator.clipboard.writeText('noemie.ducly@gmail.com').then(()=>{this.textContent='Copied !';setTimeout(()=>this.textContent='noemie.ducly@gmail.com',1500)})">noemie.ducly@gmail.com</button>
   </header>
 
   <!-- HERO -->
@@ -29,7 +29,7 @@
     <div class="hero-content">
       <div>
 <h2 class="hero-title">
-          <a href="video.html?slug=nike-unveil" id="hero-link">To Make &mdash; Graduation project</a>
+          <a href="video.html?slug=to-make-metal" id="hero-link">To Make &mdash; Graduation project</a>
         </h2>
       </div>
       <div class="hero-dots" id="hero-dots"></div>
@@ -142,19 +142,8 @@
       grid.appendChild(item);
     });
 
-    // Scroll animation
-    const workItems = Array.from(document.querySelectorAll('.work-item'));
-    const workObserver = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) {
-          const i = workItems.indexOf(entry.target);
-          setTimeout(() => entry.target.classList.add('visible'), i * 80);
-          workObserver.unobserve(entry.target);
-        }
-      });
-    }, { threshold: 0, rootMargin: '0px 0px -50px 0px' });
-
-    workItems.forEach(el => workObserver.observe(el));
+    // Show all items immediately
+    document.querySelectorAll('.work-item').forEach(el => el.classList.add('visible'));
   </script>
 </body>
 </html>

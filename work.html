@@ -112,13 +112,7 @@
     }
 
 
-    /* ── Scroll animation ── */
     .work-page-item {
-      opacity: 0;
-      transition: opacity 0.6s ease;
-    }
-
-    .work-page-item.visible {
       opacity: 1;
     }
 
@@ -154,17 +148,17 @@
     <a href="index.html" class="nav-logo">Noemie Ducly</a>
     <nav>
       <ul class="nav-links">
-        <li><a href="directors.html" class="active">Work</a></li>
+        <li><a href="work.html" class="active">Work</a></li>
         <li><a href="about.html" class="hide-mobile">About</a></li>
       </ul>
     </nav>
-    <span class="nav-contact">noemie.ducly@gmail.com</span>
+    <button class="nav-contact" onclick="navigator.clipboard.writeText('noemie.ducly@gmail.com').then(()=>{this.textContent='Copied !';setTimeout(()=>this.textContent='noemie.ducly@gmail.com',1500)})">noemie.ducly@gmail.com</button>
   </header>
 
   <section class="work-page">
     <div class="work-filter-bar">
       <button class="work-filter-btn active" data-filter="All">All</button>
-      <button class="work-filter-btn" data-filter="Creative Direction">Realisation</button>
+      <button class="work-filter-btn" data-filter="Creative Direction">Direction</button>
       <button class="work-filter-btn" data-filter="CGI">CGI</button>
       <button class="work-filter-btn" data-filter="VFX">VFX</button>
       <button class="work-filter-btn" data-filter="Photography">Photography</button>
@@ -256,11 +250,8 @@
     const allItemsInit = Array.from(document.querySelectorAll('.work-page-item'));
     seededShuffle(allItemsInit, strSeed('All')).forEach(el => grid.appendChild(el));
 
-    // Load animation
-    const workItems = Array.from(document.querySelectorAll('.work-page-item'));
-    workItems.forEach((el, i) => {
-      setTimeout(() => el.classList.add('visible'), i * 80);
-    });
+    // Show all items immediately
+    document.querySelectorAll('.work-page-item').forEach(el => el.classList.add('visible'));
   </script>
 </body>
 </html>

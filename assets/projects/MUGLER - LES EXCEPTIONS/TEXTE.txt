@@ -5,7 +5,7 @@ Les exceptions
 Mugler
 
 //description//
-Fictional teaser project for the fragrances Les Exceptions by Mugler.
+Fictional teaser project inspired by Mugler’s fashion show, created for the Les Exceptions fragrance line.
 Concept with FARIC CHEN & THOMAS DI SCALA.
 Music: Grief Seed by Lili Castiglioni.
 

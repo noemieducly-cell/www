@@ -13,11 +13,11 @@
     <a href="index.html" class="nav-logo">Noemie Ducly</a>
     <nav>
       <ul class="nav-links">
-        <li><a href="directors.html">Work</a></li>
+        <li><a href="work.html">Work</a></li>
         <li><a href="about.html" class="active hide-mobile">About</a></li>
       </ul>
     </nav>
-    <span class="nav-contact">noemie.ducly@gmail.com</span>
+    <button class="nav-contact" onclick="navigator.clipboard.writeText('noemie.ducly@gmail.com').then(()=>{this.textContent='Copied !';setTimeout(()=>this.textContent='noemie.ducly@gmail.com',1500)})">noemie.ducly@gmail.com</button>
   </header>
 
   <div class="page" id="page" style="flex: 1;"></div>
