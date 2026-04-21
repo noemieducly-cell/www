@@ -145,11 +145,11 @@
 <body>
 
   <header class="site-header">
-    <a href="index.html" class="nav-logo">Noemie Ducly</a>
+    <a href="index" class="nav-logo">Noemie Ducly</a>
     <nav>
       <ul class="nav-links">
-        <li><a href="work.html" class="active">Work</a></li>
-        <li><a href="about.html" class="hide-mobile">About</a></li>
+        <li><a href="work" class="active">Work</a></li>
+        <li><a href="about" class="hide-mobile">About</a></li>
       </ul>
     </nav>
     <button class="nav-contact" onclick="navigator.clipboard.writeText('noemie.ducly@gmail.com').then(()=>{this.textContent='Copied !';setTimeout(()=>this.textContent='noemie.ducly@gmail.com',1500)})">noemie.ducly@gmail.com</button>
@@ -226,7 +226,7 @@
       item.className = 'work-page-item';
       item.dataset.tags = (p.tags || []).join(',');
       item.innerHTML = `
-        <a href="video.html?slug=${p.slug}" class="work-page-thumb" style="${!p.image ? 'background:#000;' : ''}">
+        <a href="video?slug=${p.slug}" class="work-page-thumb" style="${!p.image ? 'background:#000;' : ''}">
           ${p.image ? imgHtml(p.image, 'work-page-img', p.title) : ''}
           ${p.video ? `<video class="work-page-video" muted playsinline loop><source src="${p.video}" type="video/mp4" /></video>` : ''}
         </a>
