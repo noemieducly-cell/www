@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Noemie Ducly</title>
+  <title>Noemie Ducly — Creative Director & CGI Artist</title>
+  <meta name="description" content="Portfolio of Noemie Ducly, Paris-based creative director, CGI generalist and VFX artist. Exploring photography, video and graphic design." />
   <link rel="icon" type="image/png" href="assets/favicon/Group 1.png" />
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -29,7 +30,7 @@
     <div class="hero-content">
       <div>
 <h2 class="hero-title">
-          <a href="video.html?slug=to-make-metal" id="hero-link">To Make &mdash; Graduation project</a>
+          <a href="project.html?slug=to-make-metal" id="hero-link">To Make &mdash; Graduation project</a>
         </h2>
       </div>
       <div class="hero-dots" id="hero-dots"></div>
@@ -86,7 +87,7 @@
       heroVideo.querySelector('source').src = p.video;
       heroVideo.load();
       heroVideo.play();
-      heroLink.href = 'video.html?slug=' + p.slug;
+      heroLink.href = 'project.html?slug=' + p.slug;
       heroLink.textContent = p.client + ' \u2014 ' + p.title;
       if (heroDirector) heroDirector.textContent = 'Noemie Ducly';
       if (index === 0) seen.clear();
@@ -126,7 +127,7 @@
       item.className = 'work-item';
 
       item.innerHTML = `
-        <a href="video.html?slug=${p.slug}" class="work-thumb-wrap">
+        <a href="project.html?slug=${p.slug}" class="work-thumb-wrap">
           <div class="work-thumb" style="${!p.image ? 'background:#000;' : ''}">
             ${p.image ? imgHtml(p.image, 'work-img', p.title) : ''}
             ${p.video ? `<video class="work-video" muted playsinline loop><source src="${p.video}" type="video/mp4" /></video>` : ''}

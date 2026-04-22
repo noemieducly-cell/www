@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Film | Noemie Ducly</title>
+  <meta name="description" content="Project by Noemie Ducly — Creative Director & CGI Artist based in Paris." />
   <link rel="icon" type="image/png" href="assets/favicon/Group 1.png" />
   <link rel="stylesheet" href="style.css" />
   <style>
@@ -397,6 +398,7 @@
 
     if (projectData) {
       document.title = projectData.title + ' | Noemie Ducly';
+      document.querySelector('meta[name="description"]').content = projectData.client + ' — ' + projectData.title + '. ' + (projectData.description || '').split('\n')[0] + ' | Noemie Ducly';
       playerDirector.textContent = projectData.client;
       playerProject.textContent = projectData.title;
 
@@ -550,11 +552,11 @@
       const next = FEATURED_PROJECTS[nextIndex];
       const prev = FEATURED_PROJECTS[prevIndex];
       ['nav-next', 'nav-next-top'].forEach(id => {
-        document.getElementById(id).href = 'video.html?slug=' + next.slug;
+        document.getElementById(id).href = 'project.html?slug=' + next.slug;
         document.getElementById(id).textContent = next.client + ' \u2014 ' + next.title;
       });
       ['nav-prev', 'nav-prev-top'].forEach(id => {
-        document.getElementById(id).href = 'video.html?slug=' + prev.slug;
+        document.getElementById(id).href = 'project.html?slug=' + prev.slug;
         document.getElementById(id).textContent = prev.client + ' \u2014 ' + prev.title;
       });
 

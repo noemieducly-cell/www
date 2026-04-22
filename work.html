@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Work | Noemie Ducly</title>
+  <meta name="description" content="Selected works by Noemie Ducly — Creative Direction, CGI, VFX, Photography and Graphic Design projects." />
   <link rel="icon" type="image/png" href="assets/favicon/Group 1.png" />
   <link rel="stylesheet" href="style.css" />
   <style>
@@ -226,7 +227,7 @@
       item.className = 'work-page-item';
       item.dataset.tags = (p.tags || []).join(',');
       item.innerHTML = `
-        <a href="video.html?slug=${p.slug}" class="work-page-thumb" style="${!p.image ? 'background:#000;' : ''}">
+        <a href="project.html?slug=${p.slug}" class="work-page-thumb" style="${!p.image ? 'background:#000;' : ''}">
           ${p.image ? imgHtml(p.image, 'work-page-img', p.title) : ''}
           ${p.video ? `<video class="work-page-video" muted playsinline loop><source src="${p.video}" type="video/mp4" /></video>` : ''}
         </a>
