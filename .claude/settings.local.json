@@ -11,7 +11,8 @@
       "Bash(python -m pip install Pillow --quiet)",
       "Bash(python)",
       "Bash(python -c ' *)",
-      "Bash(grep -v -E \"\\\\.\\(mp4|webm|mov|jpg|jpeg|png|webp\\)$\")"
+      "Bash(grep -v -E \"\\\\.\\(mp4|webm|mov|jpg|jpeg|png|webp\\)$\")",
+      "Bash(python -c \"from PIL import Image; img = Image.open\\(r'C:\\\\Users\\\\noemi\\\\Desktop\\\\NoemieSite2\\\\assets\\\\favicon\\\\Group 1.png'\\); print\\(img.size, img.mode\\)\")"
     ]
   }
 }
