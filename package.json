@@ -1,0 +1,20 @@
+{
+  "name": "noemie-ducly-portfolio",
+  "version": "1.0.0",
+  "description": "Portfolio website for Noemie Ducly",
+  "scripts": {
+    "dev": "python3 -m http.server 8000",
+    "build": "echo 'Static HTML site - no build step required'"
+  },
+  "keywords": [
+    "portfolio",
+    "creative",
+    "design"
+  ],
+  "author": "Noemie Ducly",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "@vercel/analytics": "^1.4.1"
+  }
+}
