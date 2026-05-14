@@ -64,7 +64,7 @@
     }
 
     // ── Hero slideshow ──
-    const heroProjects = seededShuffle(FEATURED_PROJECTS.filter(p => p.video), 42).slice(0, 5);
+    const heroProjects = seededShuffle(FEATURED_PROJECTS.filter(p => p.video && !p.slides), Date.now()).slice(0, 5);
     const heroVideo = document.getElementById('hero-video');
     const heroLink = document.getElementById('hero-link');
     const heroDirector = document.getElementById('hero-director');
