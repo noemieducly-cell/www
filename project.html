@@ -219,6 +219,7 @@
       object-fit: contain;
       display: block;
       user-select: none;
+      transition: opacity 0.15s ease;
     }
 
     .lightbox-close {
@@ -616,9 +617,21 @@
     let lightboxImages = [];
     let lightboxIndex = 0;
 
+    function setLightboxSrc(src) {
+      lightboxImg.style.opacity = '0';
+      const tmp = new Image();
+      tmp.onload = () => {
+        lightboxImg.src = src;
+        lightboxImg.style.opacity = '1';
+      };
+      tmp.src = src;
+    }
+
     function openLightbox(index) {
       lightboxIndex = index;
+      lightboxImg.style.opacity = '0';
       lightboxImg.src = lightboxImages[lightboxIndex];
+      lightboxImg.onload = () => lightboxImg.style.opacity = '1';
       lightbox.classList.add('open');
       document.body.style.overflow = 'hidden';
     }
@@ -628,7 +641,7 @@
     }
     function lightboxStep(dir) {
       lightboxIndex = (lightboxIndex + dir + lightboxImages.length) % lightboxImages.length;
-      lightboxImg.src = lightboxImages[lightboxIndex];
+      setLightboxSrc(lightboxImages[lightboxIndex]);
     }
 
     // Collect WIP image cells and add click listeners
