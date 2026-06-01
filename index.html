@@ -161,7 +161,7 @@
     // ── Works grid ──
     const grid = document.getElementById('works-grid');
 
-    const shuffled = seededShuffle(FEATURED_PROJECTS.filter(p => p.slug !== 'chicken-shop-date'), Date.now());
+    const shuffled = seededShuffle(FEATURED_PROJECTS, Date.now());
 
     function imgHtml(src, cls, alt) {
       const webp = src.replace(/\.(jpg|jpeg|png)$/i, '.webp');
