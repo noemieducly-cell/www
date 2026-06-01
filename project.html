@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Film | Noemie Ducly</title>
   <meta name="description" content="Project by Noemie Ducly — Creative Director & CGI Artist based in Paris." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://noemieducly.com/project.html" />
+  <meta property="og:title" content="Noemie Ducly — Creative Director & CGI Artist" />
+  <meta property="og:description" content="Project by Noemie Ducly — Creative Director & CGI Artist based in Paris." />
+  <meta property="og:image" content="https://noemieducly.com/og-image.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://noemieducly.com/og-image.jpg" />
   <link rel="icon" href="favicon.ico" sizes="any" />
   <link rel="icon" type="image/png" href="favicon-192.png" sizes="192x192" />
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
@@ -482,6 +489,17 @@
           css += ` .wip-grid-item.wip-full { aspect-ratio: ${projectData.wipVideoRatio} !important; grid-column: auto; }`;
         }
         style.textContent = css;
+        document.head.appendChild(style);
+      }
+
+      // Full-height images (no cropping) — for print/book pages
+      if (projectData.wipContain) {
+        const style = document.createElement('style');
+        style.textContent = `
+          .wip-grid-item { aspect-ratio: auto !important; overflow: visible !important; background: transparent !important; }
+          .wip-grid-item picture { height: auto !important; }
+          .wip-grid-item img { height: auto !important; width: 100% !important; object-fit: contain !important; }
+        `;
         document.head.appendChild(style);
       }
 

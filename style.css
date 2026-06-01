@@ -236,7 +236,7 @@ button {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  opacity: 1;
+  transition: opacity 1s ease;
 }
 
 .hero-gradient {
@@ -316,7 +316,7 @@ button {
 }
 
 .hero-dot.active .hero-dot-fill {
-  animation: dot-progress 4s linear forwards;
+  animation: dot-progress 6s linear forwards;
 }
 
 @keyframes dot-progress {

@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Noemie Ducly — Creative Director & CGI Artist</title>
   <meta name="description" content="Portfolio of Noemie Ducly, Paris-based creative director, CGI generalist and VFX artist. Exploring photography, video and graphic design." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://noemieducly.com/" />
+  <meta property="og:title" content="Noemie Ducly — Creative Director & CGI Artist" />
+  <meta property="og:description" content="Portfolio of Noemie Ducly, Paris-based creative director, CGI generalist and VFX artist." />
+  <meta property="og:image" content="https://noemieducly.com/og-image.jpg" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:image" content="https://noemieducly.com/og-image.jpg" />
   <link rel="icon" href="favicon.ico" sizes="any" />
   <link rel="icon" type="image/png" href="favicon-192.png" sizes="192x192" />
   <link rel="apple-touch-icon" href="apple-touch-icon.png" />
@@ -26,12 +33,12 @@
 
   <!-- HERO -->
   <section class="hero">
-    <video class="hero-video" id="hero-video" autoplay muted loop playsinline>
-      <source src="assets/tomake_METAL.mp4" type="video/mp4" />
-    </video>
+    <!-- Double-buffer: A plays in front, B preloads next clip silently, then they swap -->
+    <video class="hero-video" id="hero-video-a" muted loop playsinline style="opacity:1"></video>
+    <video class="hero-video" id="hero-video-b" muted loop playsinline style="opacity:0"></video>
     <div class="hero-content">
       <div>
-<h2 class="hero-title">
+        <h2 class="hero-title">
           <a href="project.html?slug=to-make-metal" id="hero-link">To Make &mdash; Graduation project</a>
         </h2>
       </div>
@@ -63,16 +70,23 @@
       return a;
     }
 
-    // ── Hero slideshow ──
-    const heroProjects = seededShuffle(FEATURED_PROJECTS.filter(p => p.video && !p.slides && p.slug !== 'off-the-room-2' && p.slug !== 'chicken-shop-date'), Date.now()).slice(0, 5);
-    const heroVideo = document.getElementById('hero-video');
-    const heroLink = document.getElementById('hero-link');
-    const heroDirector = document.getElementById('hero-director');
+    // ── Hero slideshow (double-buffer crossfade) ──
+    const heroProjects = seededShuffle(
+      FEATURED_PROJECTS.filter(p => p.video && !p.slides && p.slug !== 'off-the-room-2' && p.slug !== 'chicken-shop-date'),
+      Date.now()
+    ).slice(0, 5);
+
+    const heroLink      = document.getElementById('hero-link');
+    const heroDirector  = document.getElementById('hero-director');
     const dotsContainer = document.getElementById('hero-dots');
+
+    let frontVideo = document.getElementById('hero-video-a');
+    let backVideo  = document.getElementById('hero-video-b');
 
     let heroIndex = 0;
     let heroTimer = null;
-    const seen = new Set();
+    const seen    = new Set();
+    const SLIDE_MS = 6000; // ms each slide is shown
 
     // Build dots
     heroProjects.forEach((_, i) => {
@@ -83,41 +97,81 @@
       dotsContainer.appendChild(dot);
     });
 
-    function goTo(index) {
-      heroIndex = index;
-      const p = heroProjects[index];
-      heroVideo.querySelector('source').src = p.video;
-      heroVideo.load();
-      heroVideo.play();
-      heroLink.href = 'project.html?slug=' + p.slug;
-      heroLink.textContent = p.client + ' \u2014 ' + p.title;
-      if (heroDirector) heroDirector.textContent = 'Noemie Ducly';
+    // Load a video src into an element and play it silently (for preloading)
+    function loadVideo(el, src) {
+      el._vsrc = src;
+      el.src   = src;
+      el.load();
+      el.play().catch(() => {});
+    }
+
+    // Update dot progress indicators
+    function syncDots(index) {
       if (index === 0) seen.clear();
       seen.add(index);
       document.querySelectorAll('.hero-dot').forEach((d, i) => {
         d.classList.remove('active');
         const fill = d.querySelector('.hero-dot-fill');
         fill.style.animation = 'none';
-        fill.offsetHeight; // force reflow
+        fill.offsetHeight; // force reflow to restart animation
         fill.style.animation = '';
-        if (i === index) {
-          d.classList.add('active');
-        } else if (seen.has(i)) {
-          fill.style.width = '100%';
-        } else {
-          fill.style.width = '0%';
-        }
+        if (i === index)      d.classList.add('active');
+        else if (seen.has(i)) fill.style.width = '100%';
+        else                  fill.style.width = '0%';
       });
-      clearInterval(heroTimer);
-      heroTimer = setInterval(() => goTo((heroIndex + 1) % heroProjects.length), 4000);
     }
 
-    goTo(0);
+    function goTo(index) {
+      heroIndex = index;
+      const p = heroProjects[index];
+
+      // Update link & title immediately
+      heroLink.href        = 'project.html?slug=' + p.slug;
+      heroLink.textContent = p.client + ' — ' + p.title;
+      if (heroDirector) heroDirector.textContent = 'Noemie Ducly';
+
+      // If back video doesn't already have the right clip, load it now
+      if (backVideo._vsrc !== p.video) loadVideo(backVideo, p.video);
+
+      // Crossfade: fade in back (which was preloaded), fade out front
+      backVideo.style.opacity  = '1';
+      frontVideo.style.opacity = '0';
+
+      // Swap roles
+      [frontVideo, backVideo] = [backVideo, frontVideo];
+
+      // Immediately preload the NEXT clip into the new back video
+      const nextSrc = heroProjects[(index + 1) % heroProjects.length].video;
+      loadVideo(backVideo, nextSrc);
+
+      syncDots(index);
+
+      // Reset auto-advance timer
+      clearInterval(heroTimer);
+      heroTimer = setInterval(() => goTo((heroIndex + 1) % heroProjects.length), SLIDE_MS);
+    }
+
+    // — Initialise —
+    // Load first clip into front and start playing
+    loadVideo(frontVideo, heroProjects[0].video);
+    frontVideo.style.opacity = '1';
+
+    // Preload second clip into back immediately so it's ready before the first switch
+    if (heroProjects.length > 1) loadVideo(backVideo, heroProjects[1].video);
+    backVideo.style.opacity = '0';
+
+    // Set initial link/title
+    heroLink.href        = 'project.html?slug=' + heroProjects[0].slug;
+    heroLink.textContent = heroProjects[0].client + ' — ' + heroProjects[0].title;
+    syncDots(0);
+
+    // Start auto-advance
+    heroTimer = setInterval(() => goTo((heroIndex + 1) % heroProjects.length), SLIDE_MS);
 
     // ── Works grid ──
     const grid = document.getElementById('works-grid');
 
-    const shuffled = seededShuffle(FEATURED_PROJECTS, Date.now());
+    const shuffled = seededShuffle(FEATURED_PROJECTS.filter(p => p.slug !== 'chicken-shop-date'), Date.now());
 
     function imgHtml(src, cls, alt) {
       const webp = src.replace(/\.(jpg|jpeg|png)$/i, '.webp');
@@ -137,10 +191,6 @@
         </a>
         <p class="work-label">${p.client} &mdash; ${p.title}</p>
       `;
-
-      const video = item.querySelector('.work-video');
-      const thumb = item.querySelector('.work-thumb');
-
 
       grid.appendChild(item);
     });
