@@ -133,7 +133,8 @@
       // If back video doesn't already have the right clip, load it now
       if (backVideo._vsrc !== p.video) loadVideo(backVideo, p.video);
 
-      // Crossfade: fade in back (which was preloaded), fade out front
+      // Rewind to start, then instant cut (no fade — video was pre-buffered so no flash)
+      backVideo.currentTime = 0;
       backVideo.style.opacity  = '1';
       frontVideo.style.opacity = '0';
 
