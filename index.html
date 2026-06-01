@@ -33,9 +33,8 @@
 
   <!-- HERO -->
   <section class="hero">
-    <!-- Double-buffer: A plays in front, B preloads next clip silently, then they swap -->
-    <video class="hero-video" id="hero-video-a" muted loop playsinline style="opacity:1"></video>
-    <video class="hero-video" id="hero-video-b" muted loop playsinline style="opacity:0"></video>
+    <!-- One persistent <video> per clip, all preloaded once. Only the active one plays. -->
+    <div class="hero-videos" id="hero-videos"></div>
     <div class="hero-content">
       <div>
         <h2 class="hero-title">
@@ -70,7 +69,10 @@
       return a;
     }
 
-    // ── Hero slideshow (double-buffer crossfade) ──
+    // ── Hero slideshow ──
+    // One <video> per clip, all created & preloaded once. We never call load()
+    // again during playback — switching is just pause/play + opacity, so no jank
+    // and no white cut. Each clip restarts from 0 when it becomes visible.
     const heroProjects = seededShuffle(
       FEATURED_PROJECTS.filter(p => p.video && !p.slides && p.slug !== 'off-the-room-2' && p.slug !== 'chicken-shop-date'),
       Date.now()
@@ -79,14 +81,26 @@
     const heroLink      = document.getElementById('hero-link');
     const heroDirector  = document.getElementById('hero-director');
     const dotsContainer = document.getElementById('hero-dots');
-
-    let frontVideo = document.getElementById('hero-video-a');
-    let backVideo  = document.getElementById('hero-video-b');
+    const videosWrap    = document.getElementById('hero-videos');
 
     let heroIndex = 0;
     let heroTimer = null;
     const seen    = new Set();
     const SLIDE_MS = 6000; // ms each slide is shown
+
+    // Create a persistent, preloaded video element per project
+    const heroVideos = heroProjects.map((p, i) => {
+      const v = document.createElement('video');
+      v.className   = 'hero-video';
+      v.muted       = true;
+      v.loop        = true;
+      v.playsInline = true;
+      v.preload     = 'auto';
+      v.src         = p.video;
+      v.style.opacity = i === 0 ? '1' : '0';
+      videosWrap.appendChild(v);
+      return v;
+    });
 
     // Build dots
     heroProjects.forEach((_, i) => {
@@ -96,14 +110,6 @@
       dot.addEventListener('click', () => goTo(i));
       dotsContainer.appendChild(dot);
     });
-
-    // Load a video src into an element and play it silently (for preloading)
-    function loadVideo(el, src) {
-      el._vsrc = src;
-      el.src   = src;
-      el.load();
-      el.play().catch(() => {});
-    }
 
     // Update dot progress indicators
     function syncDots(index) {
@@ -125,25 +131,22 @@
       heroIndex = index;
       const p = heroProjects[index];
 
-      // Update link & title immediately
+      // Update link & title
       heroLink.href        = 'project.html?slug=' + p.slug;
       heroLink.textContent = p.client + ' — ' + p.title;
       if (heroDirector) heroDirector.textContent = 'Noemie Ducly';
 
-      // If back video doesn't already have the right clip, load it now
-      if (backVideo._vsrc !== p.video) loadVideo(backVideo, p.video);
-
-      // Rewind to start, then instant cut (no fade — video was pre-buffered so no flash)
-      backVideo.currentTime = 0;
-      backVideo.style.opacity  = '1';
-      frontVideo.style.opacity = '0';
-
-      // Swap roles
-      [frontVideo, backVideo] = [backVideo, frontVideo];
-
-      // Immediately preload the NEXT clip into the new back video
-      const nextSrc = heroProjects[(index + 1) % heroProjects.length].video;
-      loadVideo(backVideo, nextSrc);
+      // Show the active video (from the start), pause & hide the rest
+      heroVideos.forEach((v, i) => {
+        if (i === index) {
+          v.currentTime = 0;
+          v.style.opacity = '1';
+          v.play().catch(() => {});
+        } else {
+          v.pause();
+          v.style.opacity = '0';
+        }
+      });
 
       syncDots(index);
 
@@ -152,22 +155,8 @@
       heroTimer = setInterval(() => goTo((heroIndex + 1) % heroProjects.length), SLIDE_MS);
     }
 
-    // — Initialise —
-    // Load first clip into front and start playing
-    loadVideo(frontVideo, heroProjects[0].video);
-    frontVideo.style.opacity = '1';
-
-    // Preload second clip into back immediately so it's ready before the first switch
-    if (heroProjects.length > 1) loadVideo(backVideo, heroProjects[1].video);
-    backVideo.style.opacity = '0';
-
-    // Set initial link/title
-    heroLink.href        = 'project.html?slug=' + heroProjects[0].slug;
-    heroLink.textContent = heroProjects[0].client + ' — ' + heroProjects[0].title;
-    syncDots(0);
-
-    // Start auto-advance
-    heroTimer = setInterval(() => goTo((heroIndex + 1) % heroProjects.length), SLIDE_MS);
+    // Start
+    goTo(0);
 
     // ── Works grid ──
     const grid = document.getElementById('works-grid');

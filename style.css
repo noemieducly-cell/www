@@ -230,6 +230,11 @@ button {
   overflow: hidden;
 }
 
+.hero-videos {
+  position: absolute;
+  inset: 0;
+}
+
 .hero-video {
   position: absolute;
   inset: 0;
