@@ -88,31 +88,42 @@
     const seen    = new Set();
     const SLIDE_MS = 6000; // ms each slide is shown
 
-    // Create a persistent, preloaded video element per project.
+    // Create one persistent <video> per project.
     // Safari only autoplays inline video when `muted` / `playsinline` are present
     // as REAL attributes (the JS properties alone are not enough), so we set both.
+    // Crucially we DON'T load all clips at once: Safari throttles simultaneous
+    // media loads and then none of them finish. We load lazily — only the current
+    // clip eagerly, and pre-load the next one just before it's needed.
     const heroVideos = heroProjects.map((p, i) => {
       const v = document.createElement('video');
-      v.className   = 'hero-video';
+      v.className    = 'hero-video';
       v.muted        = true;
       v.defaultMuted = true;
       v.loop         = true;
       v.playsInline  = true;
-      v.preload      = 'auto';
       v.setAttribute('muted', '');
       v.setAttribute('loop', '');
       v.setAttribute('playsinline', '');
       v.setAttribute('webkit-playsinline', '');
+      v.preload = i === 0 ? 'auto' : 'none'; // only the first buffers up front
       v.src = p.video;
       v.style.opacity = i === 0 ? '1' : '0';
-      v.load(); // kick Safari into actually buffering the clip
       videosWrap.appendChild(v);
       return v;
     });
 
+    // Tell a clip to start buffering (only once)
+    function ensureLoaded(v) {
+      if (v.preload !== 'auto') {
+        v.preload = 'auto';
+        v.load();
+      }
+    }
+
     // Robustly start a clip from the beginning — Safari often isn't ready on the
     // first play() call, so retry once the element signals it can play.
     function activate(v) {
+      ensureLoaded(v);
       const start = () => {
         try { v.currentTime = 0; } catch (e) {}
         v.play().catch(() => {});
@@ -121,7 +132,6 @@
         start();
       } else {
         v.addEventListener('canplay', start, { once: true });
-        v.play().catch(() => {});     // attempt immediately too
       }
     }
 
@@ -169,6 +179,9 @@
           v.style.opacity = '0';
         }
       });
+
+      // Pre-buffer the NEXT clip so it's ready (but never more than ~2 at once)
+      ensureLoaded(heroVideos[(index + 1) % heroVideos.length]);
 
       syncDots(index);
 
