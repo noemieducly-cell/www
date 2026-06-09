@@ -88,19 +88,42 @@
     const seen    = new Set();
     const SLIDE_MS = 6000; // ms each slide is shown
 
-    // Create a persistent, preloaded video element per project
+    // Create a persistent, preloaded video element per project.
+    // Safari only autoplays inline video when `muted` / `playsinline` are present
+    // as REAL attributes (the JS properties alone are not enough), so we set both.
     const heroVideos = heroProjects.map((p, i) => {
       const v = document.createElement('video');
       v.className   = 'hero-video';
-      v.muted       = true;
-      v.loop        = true;
-      v.playsInline = true;
-      v.preload     = 'auto';
-      v.src         = p.video;
+      v.muted        = true;
+      v.defaultMuted = true;
+      v.loop         = true;
+      v.playsInline  = true;
+      v.preload      = 'auto';
+      v.setAttribute('muted', '');
+      v.setAttribute('loop', '');
+      v.setAttribute('playsinline', '');
+      v.setAttribute('webkit-playsinline', '');
+      v.src = p.video;
       v.style.opacity = i === 0 ? '1' : '0';
+      v.load(); // kick Safari into actually buffering the clip
       videosWrap.appendChild(v);
       return v;
     });
+
+    // Robustly start a clip from the beginning — Safari often isn't ready on the
+    // first play() call, so retry once the element signals it can play.
+    function activate(v) {
+      const start = () => {
+        try { v.currentTime = 0; } catch (e) {}
+        v.play().catch(() => {});
+      };
+      if (v.readyState >= 2) {        // HAVE_CURRENT_DATA or better
+        start();
+      } else {
+        v.addEventListener('canplay', start, { once: true });
+        v.play().catch(() => {});     // attempt immediately too
+      }
+    }
 
     // Build dots
     heroProjects.forEach((_, i) => {
@@ -139,9 +162,8 @@
       // Show the active video (from the start), pause & hide the rest
       heroVideos.forEach((v, i) => {
         if (i === index) {
-          v.currentTime = 0;
           v.style.opacity = '1';
-          v.play().catch(() => {});
+          activate(v);
         } else {
           v.pause();
           v.style.opacity = '0';
