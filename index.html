@@ -48,6 +48,9 @@
   <!-- PROJECT GALLERY -->
   <section class="works-section">
     <div class="works-grid" id="works-grid"></div>
+    <div class="works-more">
+      <a href="work.html" class="works-more-btn">See more +</a>
+    </div>
   </section>
 
   <footer class="work-page-footer">
@@ -196,7 +199,8 @@
     // ── Works grid ──
     const grid = document.getElementById('works-grid');
 
-    const shuffled = seededShuffle(FEATURED_PROJECTS, Date.now());
+    // Random selection on each load — any project can appear, capped at 10
+    const shuffled = seededShuffle(FEATURED_PROJECTS, Date.now()).slice(0, 10);
 
     function imgHtml(src, cls, alt) {
       const webp = src.replace(/\.(jpg|jpeg|png)$/i, '.webp');
