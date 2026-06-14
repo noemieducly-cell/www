@@ -51,7 +51,7 @@
           const isInstagram = inq.email.startsWith('@');
           let valueHtml;
           if (isEmail) {
-            valueHtml = `<a class="inquiry-email" href="mailto:${inq.email}">${inq.email}</a>`;
+            valueHtml = `<a class="inquiry-email" href="mailto:${inq.email}" onclick="event.preventDefault();navigator.clipboard.writeText('${inq.email}').then(()=>{this.textContent='Copied !';setTimeout(()=>this.textContent='${inq.email}',1500)})">${inq.email}</a>`;
           } else if (isInstagram) {
             valueHtml = `<a class="inquiry-email" href="https://instagram.com/${inq.email.slice(1)}" target="_blank">${inq.email}</a>`;
           } else {
