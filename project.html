@@ -320,15 +320,22 @@
       <div class="player-top">
         <div style="width:80px"></div>
       </div>
-      <div class="player-bottom">
-        <div class="player-meta">
-          <span class="player-director" id="player-director">&nbsp;</span>
-          <span class="player-project" id="player-project">&nbsp;</span>
+      <div class="player-bottom-wrap">
+        <div class="player-bottom">
+          <div class="player-meta">
+            <span class="player-director" id="player-director">&nbsp;</span>
+            <span class="player-project" id="player-project">&nbsp;</span>
+          </div>
+          <div class="player-controls" id="player-controls">
+            <button class="control-btn play-btn" id="btn-play" title="Play / Pause">&#10074;&#10074;</button>
+            <button class="control-btn" id="btn-sound" title="Toggle sound">Sound off</button>
+            <button class="control-btn" id="btn-fs" title="Fullscreen">&#x26F6;</button>
+          </div>
         </div>
-        <div class="player-controls" id="player-controls">
-          <button class="control-btn play-btn" id="btn-play" title="Play / Pause">&#10074;&#10074;</button>
-          <button class="control-btn" id="btn-sound" title="Toggle sound">Sound off</button>
-          <button class="control-btn" id="btn-fs" title="Fullscreen">&#x26F6;</button>
+        <div class="player-timeline" id="player-timeline">
+          <div class="player-timeline-track">
+            <div class="player-timeline-progress" id="player-timeline-progress"></div>
+          </div>
         </div>
       </div>
     </div>
@@ -422,6 +429,7 @@
           video.style.display = 'none';
           document.getElementById('player-controls').style.display = 'none';
           document.querySelector('.player-meta').style.display = 'none';
+          document.getElementById('player-timeline').style.display = 'none';
           document.querySelector('.player-ui').style.pointerEvents = 'none';
           // Inject title above year/role in desc section
           const descLeft = document.querySelector('.project-desc-left');
@@ -435,6 +443,7 @@
         video.style.display = 'none';
         document.getElementById('btn-play').style.display = 'none';
         document.getElementById('btn-sound').style.display = 'none';
+        document.getElementById('player-timeline').style.display = 'none';
         const slides = projectData.slides || (projectData.image ? [projectData.image] : []);
         if (slides.length > 0) {
           const slideshowEl = document.createElement('div');
@@ -618,13 +627,64 @@
     });
 
     // Fullscreen
+    const playerPage = document.getElementById('player-page');
     btnFs.addEventListener('click', () => {
-      const target = document.getElementById('player-page');
-      if (!document.fullscreenElement) target.requestFullscreen().catch(() => {});
+      if (!document.fullscreenElement) playerPage.requestFullscreen().catch(() => {});
       else document.exitFullscreen();
     });
 
+    // ── Auto-hide overlay when idle (fullscreen only) ──
+    let idleTimer = null;
+    function wakeUI() {
+      playerPage.classList.remove('video-player-page--idle');
+      clearTimeout(idleTimer);
+      if (document.fullscreenElement) {
+        idleTimer = setTimeout(() => playerPage.classList.add('video-player-page--idle'), 2500);
+      }
+    }
+    document.addEventListener('fullscreenchange', () => {
+      if (document.fullscreenElement) {
+        playerPage.addEventListener('mousemove', wakeUI);
+        wakeUI(); // start the idle countdown
+      } else {
+        playerPage.removeEventListener('mousemove', wakeUI);
+        clearTimeout(idleTimer);
+        playerPage.classList.remove('video-player-page--idle');
+      }
+    });
+
     video.addEventListener('click', () => btnPlay.click());
+
+    // ── Timeline / scrubbing ──
+    const timeline      = document.getElementById('player-timeline');
+    const timelineFill  = document.getElementById('player-timeline-progress');
+
+    // Reflect playback position on the bar (skip while user is scrubbing)
+    let scrubbing = false;
+    video.addEventListener('timeupdate', () => {
+      if (scrubbing) return;
+      if (isFinite(video.duration) && video.duration > 0) {
+        timelineFill.style.width = (video.currentTime / video.duration) * 100 + '%';
+      }
+    });
+
+    // Map a pointer x-position to a time and seek there
+    function seekFromEvent(e) {
+      if (!isFinite(video.duration) || video.duration <= 0) return;
+      const rect = timeline.getBoundingClientRect();
+      const x = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+      const ratio = Math.max(0, Math.min(1, x / rect.width));
+      timelineFill.style.width = ratio * 100 + '%';
+      video.currentTime = ratio * video.duration;
+    }
+
+    timeline.addEventListener('mousedown', (e) => { scrubbing = true; seekFromEvent(e); e.preventDefault(); });
+    document.addEventListener('mousemove', (e) => { if (scrubbing) seekFromEvent(e); });
+    document.addEventListener('mouseup', () => { scrubbing = false; });
+
+    timeline.addEventListener('touchstart', (e) => { scrubbing = true; seekFromEvent(e); }, { passive: true });
+    timeline.addEventListener('touchmove', (e) => { if (scrubbing) seekFromEvent(e); }, { passive: true });
+    timeline.addEventListener('touchend', () => { scrubbing = false; });
 
     // Show all WIP items immediately
     document.querySelectorAll('.wip-grid-item').forEach(el => el.classList.add('visible'));
