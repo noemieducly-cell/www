@@ -248,12 +248,24 @@ def find_unused_assets() -> list:
             blob += f.read_text(encoding="utf-8", errors="replace")
     blob = unquote(blob)
 
+    # Le site sert ses images via <picture> en derivant le .webp du .jpg/.png
+    # a l'execution (index.html, work.html, project.html) :
+    #     const webp = src.replace(/\.(jpg|jpeg|png)$/i, '.webp');
+    # Ces jumeaux .webp sont bel et bien utilises alors que leur nom
+    # n'apparait NULLE PART dans le source. Sans cette deduction ils
+    # passeraient pour des orphelins et les images casseraient.
+    twins = {re.sub(r"\.(?:jpg|jpeg|png)$", ".webp", m, flags=re.I)
+             for m in re.findall(r"assets/[^\"']+?\.(?:jpg|jpeg|png)", blob, re.I)}
+    twin_names = {t.rsplit("/", 1)[-1] for t in twins}
+
     unused = []
     for p in (SITE_DIR / "assets").rglob("*"):
         if not p.is_file() or p.suffix.lower() not in MEDIA_EXTS:
             continue
         rel = p.relative_to(SITE_DIR).as_posix()
         if rel in blob or p.name in blob:
+            continue
+        if rel in twins or p.name in twin_names:
             continue
         unused.append((rel, p.stat().st_size))
     return sorted(unused, key=lambda t: -t[1])
