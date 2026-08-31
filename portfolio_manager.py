@@ -9,6 +9,7 @@ import re
 import unicodedata
 from pathlib import Path
 from datetime import datetime
+from urllib.parse import unquote
 
 try:
     from PIL import Image as PilImage
@@ -32,6 +33,19 @@ SITE_DIR   = Path(__file__).parent
 ASSETS_DIR = SITE_DIR / "assets" / "projects"
 DATA_FILE  = SITE_DIR / "data.js"
 TAGS_FILE  = SITE_DIR / "tags.json"
+GITIGNORE_FILE = SITE_DIR / ".gitignore"
+
+# Limites GitHub : au-delà de 100 Mo le push est refusé, au-delà de 50 Mo
+# GitHub émet un avertissement mais accepte.
+GITHUB_HARD_LIMIT = 100 * 1024 * 1024
+GITHUB_WARN_LIMIT = 50 * 1024 * 1024
+
+MEDIA_EXTS = {".mp4", ".mov", ".webm", ".webp",
+              ".jpg", ".jpeg", ".png", ".gif", ".avi", ".mkv"}
+SOURCE_EXTS = {".js", ".html", ".css", ".json", ".xml"}
+
+IGNORE_BEGIN = "# >>> ORPHELINS - debut du bloc genere (ne pas editer a la main)"
+IGNORE_END   = "# <<< ORPHELINS - fin du bloc genere"
 
 ctk.set_appearance_mode("dark")
 ctk.set_default_color_theme("blue")
@@ -162,6 +176,129 @@ def run_git(*args) -> tuple:
         ["git", *args], cwd=str(SITE_DIR),
         capture_output=True, text=True, encoding="utf-8", errors="replace")
     return r.returncode, r.stdout, r.stderr
+
+
+# ── Poids des fichiers / limites GitHub ───────────────────────────────────────
+
+def human_size(n: int) -> str:
+    return f"{n / 1048576:.0f} Mo" if n >= 1048576 else f"{n / 1024:.0f} Ko"
+
+
+def git_tracked_files() -> set:
+    """Chemins suivis par git.
+
+    core.quotepath=false est indispensable : sans lui git échappe les accents
+    en octal (LA F\\303\\210VE) et plus aucun chemin accentué ne correspond.
+    """
+    _, out, _ = run_git("-c", "core.quotepath=false", "ls-files")
+    return {l.strip() for l in out.split("\n") if l.strip()}
+
+
+def index_oversized() -> tuple:
+    """Fichiers de l'index git dépassant les limites GitHub.
+
+    Renvoie (bloquants, avertissements), chaque élément étant (chemin, taille).
+    Les tailles sont lues d'un coup via `cat-file --batch-check` : une seule
+    sous-commande git au lieu d'une par fichier.
+    """
+    _, out, _ = run_git("-c", "core.quotepath=false", "ls-files", "-s")
+    entries = []
+    for line in out.split("\n"):
+        if not line.strip():
+            continue
+        meta, _, path = line.partition("\t")
+        bits = meta.split()
+        if len(bits) >= 2:
+            entries.append((bits[1], path))
+    if not entries:
+        return [], []
+
+    r = subprocess.run(
+        ["git", "cat-file", "--batch-check"], cwd=str(SITE_DIR),
+        input="\n".join(sha for sha, _ in entries),
+        capture_output=True, text=True, encoding="utf-8", errors="replace")
+
+    blockers, warns = [], []
+    for (_, path), line in zip(entries, r.stdout.strip().split("\n")):
+        bits = line.split()
+        if len(bits) < 3 or not bits[2].isdigit():
+            continue
+        size = int(bits[2])
+        if size > GITHUB_HARD_LIMIT:
+            blockers.append((path, size))
+        elif size > GITHUB_WARN_LIMIT:
+            warns.append((path, size))
+    blockers.sort(key=lambda t: -t[1])
+    warns.sort(key=lambda t: -t[1])
+    return blockers, warns
+
+
+# ── Fichiers inutilisés (orphelins) ───────────────────────────────────────────
+
+def find_unused_assets() -> list:
+    """Médias présents dans assets/ mais référencés nulle part sur le site.
+
+    On compare sur le chemin ET sur le seul nom de fichier : en cas de doute
+    le fichier est considéré comme utilisé, pour ne jamais retirer par erreur
+    un média dont le site a besoin.
+    """
+    blob = ""
+    for f in SITE_DIR.iterdir():
+        if f.is_file() and f.suffix.lower() in SOURCE_EXTS:
+            blob += f.read_text(encoding="utf-8", errors="replace")
+    blob = unquote(blob)
+
+    unused = []
+    for p in (SITE_DIR / "assets").rglob("*"):
+        if not p.is_file() or p.suffix.lower() not in MEDIA_EXTS:
+            continue
+        rel = p.relative_to(SITE_DIR).as_posix()
+        if rel in blob or p.name in blob:
+            continue
+        unused.append((rel, p.stat().st_size))
+    return sorted(unused, key=lambda t: -t[1])
+
+
+def write_gitignore_block(paths: list):
+    """Réécrit le bloc ORPHELINS du .gitignore en conservant le reste.
+
+    Les chemins sont triés : le bloc est régénéré à chaque nettoyage, et un
+    ordre stable évite un diff illisible à chaque fois.
+    """
+    block = IGNORE_BEGIN + "\n\n" + "\n".join("/" + p for p in sorted(paths)) \
+            + "\n\n" + IGNORE_END + "\n"
+
+    old = GITIGNORE_FILE.read_text(encoding="utf-8") if GITIGNORE_FILE.exists() else ""
+    if IGNORE_BEGIN in old and IGNORE_END in old:
+        new = old[:old.index(IGNORE_BEGIN)] + block + \
+              old[old.index(IGNORE_END) + len(IGNORE_END):].lstrip("\n")
+    else:
+        new = (old.rstrip() + "\n\n" if old.strip() else "") + block
+
+    with open(GITIGNORE_FILE, "w", encoding="utf-8", newline="\n") as f:
+        f.write(new)
+
+
+def untrack_files(paths: list) -> int:
+    """Retire des fichiers de l'index git sans les effacer du disque.
+
+    .gitignore n'a aucun effet sur un fichier déjà suivi : il faut ce
+    `git rm --cached` pour que git cesse de l'envoyer sur GitHub.
+    """
+    tracked = git_tracked_files()
+    todo = [p for p in paths if p in tracked]
+    if not todo:
+        return 0
+    tmp = SITE_DIR / "_untrack.tmp"
+    # newline="\n" obligatoire : un \r en fin de ligne casserait le pathspec.
+    with open(tmp, "w", encoding="utf-8", newline="\n") as f:
+        f.write("\n".join(todo))
+    try:
+        run_git("rm", "--cached", "--quiet", "--ignore-unmatch",
+                f"--pathspec-from-file={tmp}")
+    finally:
+        tmp.unlink(missing_ok=True)
+    return len(todo)
 
 
 # ── data.js parser ────────────────────────────────────────────────────────────
@@ -763,8 +900,15 @@ class App(ctk.CTk):
             fill="x", pady=(0, 6))
         self.txt_status = ctk.CTkTextbox(f, height=180, state="disabled")
         self.txt_status.pack(fill="x", pady=(0, 8))
-        ctk.CTkButton(f, text="Actualiser", width=140,
-                      command=self._refresh_status).pack(anchor="w", pady=(0, 16))
+
+        row = ctk.CTkFrame(f, fg_color="transparent")
+        row.pack(fill="x", pady=(0, 16))
+        ctk.CTkButton(row, text="Actualiser", width=140,
+                      command=self._refresh_status).pack(side="left")
+        ctk.CTkButton(row, text="Analyser les fichiers inutilisés", width=240,
+                      fg_color="transparent", border_width=1, border_color=SEP,
+                      text_color=T1, hover_color=CARD,
+                      command=self._clean_unused).pack(side="left", padx=(8, 0))
 
         ctk.CTkLabel(f, text="Message de commit",
                      font=ctk.CTkFont(size=13, weight="bold"), anchor="w").pack(
@@ -1061,13 +1205,82 @@ class App(ctk.CTk):
         _, out, err = run_git("status")
         self._set(self.txt_status, out + (("\n" + err) if err.strip() else ""))
 
+    def _clean_unused(self):
+        """Liste les médias non utilisés et les sort de git (sans les effacer)."""
+        unused = find_unused_assets()
+        if not unused:
+            messagebox.showinfo("Rien à nettoyer",
+                                "Tous les médias de assets/ sont utilisés sur le site.")
+            return
+
+        total = sum(s for _, s in unused)
+        apercu = "\n".join(f"  • {human_size(s)}  {Path(p).name}"
+                           for p, s in unused[:10])
+        if len(unused) > 10:
+            apercu += f"\n  … et {len(unused) - 10} autres"
+
+        if not messagebox.askyesno(
+                "Fichiers inutilisés",
+                f"{len(unused)} médias ({human_size(total)}) ne sont utilisés "
+                f"nulle part sur le site :\n\n{apercu}\n\n"
+                "Les exclure de GitHub ?\n\n"
+                "Ils RESTENT sur ton disque, ils cessent simplement d'être "
+                "envoyés en ligne."):
+            return
+
+        try:
+            paths = [p for p, _ in unused]
+            write_gitignore_block(paths)
+            n = untrack_files(paths)
+            run_git("add", ".gitignore")
+            self._log(f"── Nettoyage : {len(paths)} médias exclus "
+                      f"({human_size(total)}), {n} retirés du suivi git")
+            self._refresh_status()
+            messagebox.showinfo(
+                "Nettoyé",
+                f"{len(paths)} médias ({human_size(total)}) sont désormais "
+                f"exclus de GitHub.\n\nAucun fichier n'a été supprimé de ton "
+                f"disque.\n\nPense à publier pour enregistrer le changement.")
+        except Exception as e:
+            messagebox.showerror("Erreur", str(e))
+
     def _publish(self):
         msg = self.var_commit.get().strip()
         if not msg:
             messagebox.showerror("Message vide", "Entre un message de commit.")
             return
+
+        # On stage d'abord, puis on inspecte : c'est le contenu de l'index qui
+        # part sur GitHub, pas le dossier de travail.
+        self._log("── git add -A " + "─" * 21)
+        run_git("add", "-A")
+
+        blockers, warns = index_oversized()
+        if blockers:
+            liste = "\n".join(f"  • {human_size(s)}  {Path(p).name}"
+                              for p, s in blockers[:8])
+            messagebox.showerror(
+                "Fichiers trop lourds",
+                f"GitHub refuse tout fichier de plus de 100 Mo.\n\n"
+                f"{len(blockers)} fichier(s) dépassent cette limite :\n\n{liste}\n\n"
+                "Le push échouerait. Clique sur « Analyser les fichiers "
+                "inutilisés » si ces fichiers ne servent pas au site, sinon "
+                "allège-les avant de publier.")
+            self._refresh_status()
+            return
+
+        if warns:
+            liste = "\n".join(f"  • {human_size(s)}  {Path(p).name}"
+                              for p, s in warns[:8])
+            if not messagebox.askyesno(
+                    "Fichiers volumineux",
+                    f"{len(warns)} fichier(s) dépassent 50 Mo :\n\n{liste}\n\n"
+                    "GitHub va les accepter mais affichera un avertissement.\n\n"
+                    "Publier quand même ?"):
+                self._refresh_status()
+                return
+
         for label, git_args in [
-            ("── git add -A",  ["add", "-A"]),
             ("── git commit",  ["commit", "-m", msg]),
             ("── git push",    ["push"]),
         ]:

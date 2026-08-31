@@ -18,13 +18,12 @@ ehthumbs.db
 .DS_Store
 desktop.ini
 *.tmp
-_orphans.txt
-_orphans_tracked.txt
-_gen_gitignore.py
+__pycache__/
 
 
 # >>> ORPHELINS - debut du bloc genere (ne pas editer a la main)
 
+/assets/favicon/Group 1.png
 /assets/favicon/Group 1.webp
 /assets/projects/CHICKENSHOPDATE/PREVIEW/Still 2026-04-16 013050_2.2.8.webp
 /assets/projects/CHICKENSHOPDATE/WIP/Still 2026-04-16 012939_2.2.1.webp
