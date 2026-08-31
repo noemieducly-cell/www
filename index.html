@@ -81,19 +81,6 @@
       Date.now()
     ).slice(0, 5);
 
-    // Le carrousel ne doit jamais s'ouvrir sur un projet VFX : on echange la
-    // premiere place avec le premier projet non-VFX de la selection. Les projets
-    // VFX restent presents, simplement jamais en ouverture. Si la selection
-    // n'en contient aucun autre, on laisse l'ordre tel quel plutot que de vider
-    // le carrousel.
-    const estVFX = p => (p.tags || []).includes('VFX');
-    if (heroProjects.length && estVFX(heroProjects[0])) {
-      const i = heroProjects.findIndex(p => !estVFX(p));
-      if (i > 0) {
-        [heroProjects[0], heroProjects[i]] = [heroProjects[i], heroProjects[0]];
-      }
-    }
-
     const heroLink      = document.getElementById('hero-link');
     const heroDirector  = document.getElementById('hero-director');
     const dotsContainer = document.getElementById('hero-dots');
@@ -121,11 +108,6 @@
       v.setAttribute('loop', '');
       v.setAttribute('playsinline', '');
       v.setAttribute('webkit-playsinline', '');
-      // Filet de securite : si la lecture echoue (Safari a court de decodeurs),
-      // l'affiche du projet reste visible au lieu d'un fond noir.
-      if (p.image) v.poster = p.image;
-      // Safari honore l'autoplay declaratif plus fiablement qu'un play() differe.
-      if (i === 0) v.setAttribute('autoplay', '');
       v.preload = i === 0 ? 'auto' : 'none'; // only the first buffers up front
       v.src = p.video;
       v.style.opacity = i === 0 ? '1' : '0';
@@ -143,41 +125,12 @@
 
     // Robustly start a clip from the beginning — Safari often isn't ready on the
     // first play() call, so retry once the element signals it can play.
-    //
-    // Safari specifics (Chrome/Firefox are far more forgiving):
-    //  - assigning currentTime starts a seek, and a play() issued during that
-    //    seek is rejected with AbortError. We therefore only rewind when the
-    //    clip isn't already at the start.
-    //  - play() rejections must NOT be swallowed: when Safari runs out of video
-    //    decoders (several 4K clips at once) this is the only symptom. We log it
-    //    and retry, rather than failing silently on a black background.
     function activate(v) {
       ensureLoaded(v);
-
-      const play = (essai = 0) => {
-        const p = v.play();
-        if (!p) return;
-        p.catch(err => {
-          if (err && err.name === 'NotAllowedError') return; // autoplay refuse
-          if (essai < 2) {
-            v.addEventListener('canplaythrough', () => play(essai + 1), { once: true });
-          } else {
-            console.warn('[hero] lecture impossible :', v.currentSrc, err && err.name);
-            v.dispatchEvent(new CustomEvent('hero-echec', { bubbles: true }));
-          }
-        });
-      };
-
       const start = () => {
-        if (v.currentTime > 0.05) {
-          // On attend la fin du seek avant de lancer play(), sinon Safari annule.
-          v.addEventListener('seeked', () => play(), { once: true });
-          try { v.currentTime = 0; } catch (e) { play(); }
-        } else {
-          play();
-        }
+        try { v.currentTime = 0; } catch (e) {}
+        v.play().catch(() => {});
       };
-
       if (v.readyState >= 2) {        // HAVE_CURRENT_DATA or better
         start();
       } else {
