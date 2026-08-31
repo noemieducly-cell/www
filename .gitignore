@@ -1,0 +1,142 @@
+# ==============================================================
+#  .gitignore - site Noemie Ducly
+#
+#  Le bloc ORPHELINS ci-dessous liste les MEDIAS presents dans
+#  assets/ mais references nulle part sur le site (rushes, WIP
+#  retires, projets supprimes...). Ils restent sur ton disque,
+#  mais ne partent plus sur GitHub.
+#
+#  Les fichiers TEXTE.txt restent versionnes (ils ne pesent rien).
+#
+#  Pour le regenerer : onglet "Publier" > bouton
+#  "Analyser les fichiers inutilises" dans Portfolio Manager.
+# ==============================================================
+
+# --- Systeme / temporaires ---
+Thumbs.db
+ehthumbs.db
+.DS_Store
+desktop.ini
+*.tmp
+_orphans.txt
+_orphans_tracked.txt
+_gen_gitignore.py
+
+
+# >>> ORPHELINS - debut du bloc genere (ne pas editer a la main)
+
+/assets/favicon/Group 1.webp
+/assets/projects/CHICKENSHOPDATE/PREVIEW/Still 2026-04-16 013050_2.2.8.webp
+/assets/projects/CHICKENSHOPDATE/WIP/Still 2026-04-16 012939_2.2.1.webp
+/assets/projects/CHICKENSHOPDATE/WIP/Still 2026-04-16 012939_2.2.12.webp
+/assets/projects/CHICKENSHOPDATE/WIP/Still 2026-04-16 012939_2.2.4.webp
+/assets/projects/CHICKENSHOPDATE/WIP/Still 2026-04-16 012939_2.2.5.webp
+/assets/projects/CHICKENSHOPDATE/WIP/Still 2026-04-16 012939_2.2.9.webp
+/assets/projects/JOLGREEN AND TIAKOLA/PREVIEW/Frame 140.webp
+/assets/projects/JOLGREEN AND TIAKOLA/VIDEO/Frame 100.webp
+/assets/projects/JOLGREEN AND TIAKOLA/VIDEO/Frame 120.webp
+/assets/projects/JOLGREEN AND TIAKOLA/VIDEO/Frame 140.webp
+/assets/projects/JOLGREEN AND TIAKOLA/VIDEO/Frame 80.webp
+/assets/projects/JOLGREEN AND TIAKOLA/WIP/Frame 10.webp
+/assets/projects/JOLGREEN AND TIAKOLA/WIP/Frame 12.webp
+/assets/projects/JOLGREEN AND TIAKOLA/WIP/Frame 14.webp
+/assets/projects/JOLGREEN AND TIAKOLA/WIP/Frame 21.webp
+/assets/projects/JOLGREEN AND TIAKOLA/WIP/Frame 22.webp
+/assets/projects/JOLGREEN AND TIAKOLA/WIP/Frame 28.webp
+/assets/projects/JOLGREEN AND TIAKOLA/WIP/Frame 32.webp
+/assets/projects/JOLGREEN AND TIAKOLA/WIP/Frame 34.webp
+/assets/projects/JOLGREEN AND TIAKOLA/WIP/Frame 36.webp
+/assets/projects/JOLGREEN AND TIAKOLA/WIP/Frame 6.webp
+/assets/projects/JOLGREEN AND TIAKOLA/WIP/Frame 7.webp
+/assets/projects/JOLGREEN AND TIAKOLA/WIP/Frame 8.webp
+/assets/projects/LA FÈVE - 2026/WIP/feve_sq02_sh03_intro_v006_breakdown_EXPORT.mp4
+/assets/projects/LA FÈVE - 2026/WIP/slide 4.mp4
+/assets/projects/LA FÈVE - 2026/WIP/slide 7.mp4
+/assets/projects/MUGLER - LES EXCEPTIONS/PREVIEW/Still 2026-04-17 015455_1.15.1.webp
+/assets/projects/MUGLER - LES EXCEPTIONS/WIP/Still 2026-04-17 02.webp
+/assets/projects/MUGLER - LES EXCEPTIONS/WIP/Still 2026-04-17 023154_1.14.2.webp
+/assets/projects/MUGLER - LES EXCEPTIONS/WIP/Still 2026-04-17 023154_1.14.3.webp
+/assets/projects/MUGLER - LES EXCEPTIONS/WIP/Still 2026-04-17 023154_1.5.1.webp
+/assets/projects/MUGLER - LES EXCEPTIONS/WIP/Still 2026-04-20 171241_1.11.1.webp
+/assets/projects/MUGLER - LES EXCEPTIONS/WIP/Still 2026-04-20 171241_1.9.1.webp
+/assets/projects/MUGLER - LES EXCEPTIONS/WIP/Still 2026-04-20 171241_2.1.1.webp
+/assets/projects/MUGLER - LES EXCEPTIONS/WIP/Still 2026-04-20 171241_2.1.2.webp
+/assets/projects/MUGLER - LES EXCEPTIONS/WIP/Still 2026-04-20 171316_1.1.1.webp
+/assets/projects/MUGLER - LES EXCEPTIONS/WIP/Still 2026-04-20 171316_1.10.1.webp
+/assets/projects/MUGLER - LES EXCEPTIONS/WIP/Still 2026-04-20 171316_1.2.1.webp
+/assets/projects/MUGLER - LES EXCEPTIONS/WIP/Still 2026-04-20 171316_1.4.1.webp
+/assets/projects/MUGLER - LES EXCEPTIONS/WIP/Still 2026-04-20 171316_1.5.2.webp
+/assets/projects/MUGLER - LES EXCEPTIONS/WIP/Still 2026-04-20 171316_1.6.1.webp
+/assets/projects/MUGLER - LES EXCEPTIONS/WIP/Still 2026-04-20 171316_1.7.1.webp
+/assets/projects/MUGLER - LES EXCEPTIONS/WIP/Still 2026-04-20 171316_1.8.1.webp
+/assets/projects/MUGLER - LES EXCEPTIONS/WIP/Still 2026-04-20 171331_1.17.1.webp
+/assets/projects/MUGLER - LES EXCEPTIONS/WIP/Still 2026-04-20 171343_1.17.1.webp
+/assets/projects/MUGLER - LES EXCEPTIONS/WIP/Still 2026-04-20 171603_1.15.1.webp
+/assets/projects/MUGLER - LES EXCEPTIONS/WIP/Still 2026-04-20 171727_1.12.2.webp
+/assets/projects/OFF THE ROOM/PREVIEW/PROJET J.webp
+/assets/projects/OFF THE ROOM/WIP/12MM DJ11.mp4
+/assets/projects/OFF THE ROOM/WIP/Grille_loop/10.mp4
+/assets/projects/OFF THE ROOM/WIP/Grille_loop/11.mp4
+/assets/projects/OFF THE ROOM/WIP/Grille_loop/4.mp4
+/assets/projects/OFF THE ROOM/WIP/Grille_loop/6.mp4
+/assets/projects/OFF THE ROOM/WIP/Grille_loop/7.5.mp4
+/assets/projects/OFF THE ROOM/WIP/Grille_loop/8.5.mp4
+/assets/projects/OFF THE ROOM/WIP/Grille_loop/9.mp4
+/assets/projects/OFF THE ROOM/WIP/LARGE H DJ11.mp4
+/assets/projects/OFF THE ROOM/WIP/LOOP_TURN_SALOMON_export_V2.mp4
+/assets/projects/SHORT STORY - KIBI/VIDEO/KIBI_MASTER_02_1.mp4
+/assets/projects/SHORT STORY - KIBI/VIDEO/KIBI_MASTER_03_1.mp4
+/assets/projects/SHORT STORY - KIBI/WIP/Still 2026-06-16 203229_5.1.1.webp
+/assets/projects/SHORT STORY - KIBI/WIP/Still 2026-06-16 203229_5.1.10.webp
+/assets/projects/SHORT STORY - KIBI/WIP/Still 2026-06-16 203229_5.1.11.webp
+/assets/projects/SHORT STORY - KIBI/WIP/Still 2026-06-16 203229_5.1.13.webp
+/assets/projects/SHORT STORY - KIBI/WIP/Still 2026-06-16 203229_5.1.2.webp
+/assets/projects/SHORT STORY - KIBI/WIP/Still 2026-06-16 203229_5.1.3.webp
+/assets/projects/SHORT STORY - KIBI/WIP/Still 2026-06-16 203229_5.1.4.webp
+/assets/projects/SHORT STORY - KIBI/WIP/Still 2026-06-16 203229_5.1.5.webp
+/assets/projects/SHORT STORY - KIBI/WIP/Still 2026-06-16 203229_5.1.6.webp
+/assets/projects/SHORT STORY - KIBI/WIP/Still 2026-06-16 203229_5.1.7.webp
+/assets/projects/SHORT STORY - KIBI/WIP/Still 2026-06-16 203229_5.1.8.webp
+/assets/projects/SHORT STORY - KIBI/WIP/Still 2026-06-16 203229_5.1.9.webp
+/assets/projects/TO MAKE - MINERALS/PREVIEW/Still 2026-01-20 094819_1.4.1.webp
+/assets/projects/TO MAKE - MINERALS/WIP/Still 2026-01-19 153646_2.4.1.webp
+/assets/projects/TO MAKE - MINERALS/WIP/Still 2026-01-19 153646_2.4.webp
+/assets/projects/TO MAKE - MINERALS/WIP/Still 2026-01-19 171419_4.1.1.webp
+/assets/projects/TO MAKE - MINERALS/WIP/Still 2026-01-19 171419_4.1.webp
+/assets/projects/TO MAKE - MINERALS/WIP/Still 2026-01-19 171440_2.3.1.webp
+/assets/projects/TO MAKE - MINERALS/WIP/Still 2026-01-19 171440_2.3.webp
+/assets/projects/TO MAKE - MINERALS/WIP/Still 2026-01-20 094819_1.4.1.webp
+/assets/projects/TO MAKE - MINERALS/WIP/Still 2026-01-20 094819_1.4.webp
+/assets/projects/TO MAKE - PIGMENTS/PREVIEW/Still 2026-01-19 153646_4.4.1.webp
+/assets/projects/TO MAKE - PIGMENTS/WIP/PIGMENT_v02_1.webp
+/assets/projects/TO MAKE - PIGMENTS/WIP/Still 2026-01-19 153646_3.9.1.webp
+/assets/projects/TO MAKE - PIGMENTS/WIP/Still 2026-01-19 153646_3.9.webp
+/assets/projects/TO MAKE - PIGMENTS/WIP/Still 2026-01-19 153646_4.4.1.webp
+/assets/projects/TO MAKE - PIGMENTS/WIP/Still 2026-01-19 153646_4.4.webp
+/assets/projects/TO MAKE - PIGMENTS/WIP/Still 2026-01-19 155215_3.10.1.webp
+/assets/projects/TO MAKE - PIGMENTS/WIP/Still 2026-01-19 155215_3.10.webp
+/assets/projects/TO MAKE - PIGMENTS/WIP/Still 2026-01-19 155334_4.3.1.webp
+/assets/projects/TO MAKE - PIGMENTS/WIP/Still 2026-01-19 155334_4.3.webp
+/assets/projects/TO MAKE - PIGMENTS/WIP/Still 2026-01-19 170706_3.2.1.webp
+/assets/projects/TO MAKE - PIGMENTS/WIP/Still 2026-01-19 170706_3.2.webp
+/assets/projects/TO MAKE - PRINTS/WIP/3.5.webp
+/assets/projects/TO MAKE - PRINTS/WIP/7aaaaa.webp
+/assets/projects/TO MAKE - PRINTS/WIP/A.webp
+/assets/projects/TO MAKE - PRINTS/WIP/B.webp
+/assets/projects/TO MAKE - WOOD/PREVIEW/Still 2026-01-19 153646_3.1.1.webp
+/assets/projects/TO MAKE - WOOD/PREVIEW/Still 2026-01-19 155842_3.2.1.png
+/assets/projects/TO MAKE - WOOD/PREVIEW/Still 2026-01-19 155842_3.2.1.webp
+/assets/projects/TO MAKE - WOOD/WIP/Still 2026-01-19 153646_2.1.1.webp
+/assets/projects/TO MAKE - WOOD/WIP/Still 2026-01-19 153646_2.1.webp
+/assets/projects/TO MAKE - WOOD/WIP/Still 2026-01-19 153646_2.2.1.webp
+/assets/projects/TO MAKE - WOOD/WIP/Still 2026-01-19 153646_2.2.webp
+/assets/projects/TO MAKE - WOOD/WIP/Still 2026-01-19 153646_3.1.1.webp
+/assets/projects/TO MAKE - WOOD/WIP/Still 2026-01-19 153646_3.1.webp
+/assets/projects/TO MAKE - WOOD/WIP/Still 2026-01-19 155842_3.2.1.webp
+/assets/projects/TO MAKE - WOOD/WIP/Still 2026-01-19 155842_3.2.webp
+/assets/projects/TO MAKE - WOOD/WIP/Still 2026-01-19 161520_2.5.1.webp
+/assets/projects/TO MAKE - WOOD/WIP/Still 2026-01-19 161520_2.5.webp
+/assets/projects/VAN RYSEL - RCR G2/VIDEO/VR - INSTAGRAM OPT3.mp4
+/assets/projects/YVNNIS AND SO LA LUNE - MAL AIMES/PREVIEW/MAL_AIMES_GRADE_prores v2.00_01_32_23.Still006.webp
+
+# <<< ORPHELINS - fin du bloc genere
