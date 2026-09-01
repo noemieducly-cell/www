@@ -544,13 +544,9 @@
           wipGrid.appendChild(cell);
         });
       } else {
-        // Placeholders (6 cells)
-        for (let i = 0; i < 6; i++) {
-          const cell = document.createElement('div');
-          cell.className = 'wip-grid-item';
-          cell.innerHTML = `<div class="wip-placeholder">WIP</div>`;
-          wipGrid.appendChild(cell);
-        }
+        // Aucun WIP pour ce projet : on masque la grille. Elle affichait six
+        // cases grises « WIP » qui donnaient une page inachevee.
+        wipGrid.style.display = 'none';
       }
 
       // WIP loop column

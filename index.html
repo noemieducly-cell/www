@@ -200,7 +200,12 @@
     const grid = document.getElementById('works-grid');
 
     // Random selection on each load — any project can appear, capped at 10
-    const shuffled = seededShuffle(FEATURED_PROJECTS, Date.now()).slice(0, 10);
+    // Van Rysel est volontairement exclu de cette grille (il reste visible
+    // dans le carrousel du hero et sur la page Work).
+    const shuffled = seededShuffle(
+      FEATURED_PROJECTS.filter(p => p.slug !== 'rcr-g2'),
+      Date.now()
+    ).slice(0, 10);
 
     function imgHtml(src, cls, alt) {
       const webp = src.replace(/\.(jpg|jpeg|png)$/i, '.webp');
