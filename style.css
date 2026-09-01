@@ -1182,6 +1182,14 @@ button {
     grid-template-columns: 1fr;
   }
 
+  /* Pas de hero sur telephone : le carrousel de 5 videos saturait Safari iOS.
+     Le JS n'y cree aucune <video> ; cette regle retire la section vide, qui
+     occuperait sinon toute la hauteur de l'ecran. La page ouvre directement
+     sur la grille de projets. */
+  .hero {
+    display: none;
+  }
+
   .hero-content {
     bottom: 24px;
     left: 20px;

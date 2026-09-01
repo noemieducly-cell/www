@@ -76,7 +76,13 @@
     // One <video> per clip, all created & preloaded once. We never call load()
     // again during playback — switching is just pause/play + opacity, so no jank
     // and no white cut. Each clip restarts from 0 when it becomes visible.
-    const heroProjects = seededShuffle(
+    // Sur telephone le hero est entierement supprime : aucune <video> n'est
+    // creee, donc aucun decodeur n'est mobilise. Une regle CSS ne suffirait
+    // pas — les elements existeraient toujours et Safari leur allouerait des
+    // ressources, ce qui est precisement ce qui saturait iOS.
+    const estMobile = window.matchMedia('(max-width: 768px)').matches;
+
+    const heroProjects = estMobile ? [] : seededShuffle(
       FEATURED_PROJECTS.filter(p => p.video && !p.slides && p.slug !== 'off-the-room-2' && p.slug !== 'chicken-shop-date'),
       Date.now()
     ).slice(0, 5);
@@ -193,8 +199,8 @@
       heroTimer = setInterval(() => goTo((heroIndex + 1) % heroProjects.length), SLIDE_MS);
     }
 
-    // Start
-    goTo(0);
+    // Start — rien a demarrer sur telephone, la liste est vide
+    if (heroProjects.length) goTo(0);
 
     // ── Works grid ──
     const grid = document.getElementById('works-grid');
