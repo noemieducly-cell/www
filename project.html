@@ -133,6 +133,10 @@
       inset: 0;
       width: 100%;
       height: 100%;
+      /* Selon l'extension, .hero-slide est soit un <picture> soit directement
+         un <img> (cas des .webp). Sans object-fit ici, ce second cas etait
+         etire : width/height 100% avec le remplissage par defaut. */
+      object-fit: cover;
       opacity: 0;
       transition: opacity 0.8s ease;
       display: block;
