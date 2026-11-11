@@ -172,10 +172,23 @@ def inject_project(project: dict):
 
 
 def run_git(*args) -> tuple:
-    r = subprocess.run(
-        ["git", *args], cwd=str(SITE_DIR),
-        capture_output=True, text=True, encoding="utf-8", errors="replace")
+    # safe.directory : le disque E: (exFAT) n'enregistre pas le propriétaire
+    # des fichiers, et git refuse alors tout le dépôt (« dubious ownership »).
+    # On autorise ce seul dossier, pour chaque commande, sans toucher à la
+    # config globale.
+    try:
+        r = subprocess.run(
+            ["git", "-c", f"safe.directory={SITE_DIR.resolve().as_posix()}", *args],
+            cwd=str(SITE_DIR),
+            capture_output=True, text=True, encoding="utf-8", errors="replace")
+    except FileNotFoundError:
+        return 1, "", GIT_MISSING_MSG
     return r.returncode, r.stdout, r.stderr
+
+
+GIT_MISSING_MSG = ("Git est introuvable sur cet ordinateur.\n"
+                   "Installe-le (https://git-scm.com/download/win) puis relance "
+                   "Portfolio Manager pour pouvoir publier sur GitHub.")
 
 
 # ── Poids des fichiers / limites GitHub ───────────────────────────────────────
@@ -213,10 +226,14 @@ def index_oversized() -> tuple:
     if not entries:
         return [], []
 
-    r = subprocess.run(
-        ["git", "cat-file", "--batch-check"], cwd=str(SITE_DIR),
-        input="\n".join(sha for sha, _ in entries),
-        capture_output=True, text=True, encoding="utf-8", errors="replace")
+    try:
+        r = subprocess.run(
+            ["git", "-c", f"safe.directory={SITE_DIR.resolve().as_posix()}",
+             "cat-file", "--batch-check"], cwd=str(SITE_DIR),
+            input="\n".join(sha for sha, _ in entries),
+            capture_output=True, text=True, encoding="utf-8", errors="replace")
+    except FileNotFoundError:
+        return [], []
 
     blockers, warns = [], []
     for (_, path), line in zip(entries, r.stdout.strip().split("\n")):
