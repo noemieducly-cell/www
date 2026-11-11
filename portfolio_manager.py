@@ -65,7 +65,7 @@ DANGER  = "#ff453a"
 
 TAGS_DEFAULT = [
     "Creative Direction", "CGI", "VFX",
-    "Photography", "Graphic Design", "Motion Design", "Film",
+    "Photography", "Motion Design", "Film",
 ]
 
 
