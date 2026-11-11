@@ -1,7 +1,7 @@
 {
   "cleanUrls": true,
   "rewrites": [
-    { "source": "/project/:slug", "destination": "/project.html" }
+    { "source": "/project/:slug", "destination": "/project" }
   ],
   "redirects": [
     {
