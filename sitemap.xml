@@ -8,31 +8,31 @@
     <priority>1.0</priority>
   </url>
   <url>
-    <loc>https://noemieducly.com/work.html</loc>
+    <loc>https://noemieducly.com/work</loc>
     <changefreq>monthly</changefreq>
     <priority>0.9</priority>
   </url>
   <url>
-    <loc>https://noemieducly.com/about.html</loc>
+    <loc>https://noemieducly.com/about</loc>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
 
   <!-- Pages projets -->
-  <url><loc>https://noemieducly.com/project.html?slug=swat-team</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://noemieducly.com/project.html?slug=la-feve</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://noemieducly.com/project.html?slug=to-make-wood</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://noemieducly.com/project.html?slug=2026</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://noemieducly.com/project.html?slug=the-pursuit-is-endless</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://noemieducly.com/project.html?slug=hublot</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://noemieducly.com/project.html?slug=to-make-metal</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://noemieducly.com/project.html?slug=to-make-minerals</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://noemieducly.com/project.html?slug=to-make-pigments</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://noemieducly.com/project.html?slug=rcr-g2</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://noemieducly.com/project.html?slug=les-exceptions</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://noemieducly.com/project.html?slug=off-the-room-2</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://noemieducly.com/project.html?slug=mal-aimes</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://noemieducly.com/project.html?slug=to-make-prints</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
-  <url><loc>https://noemieducly.com/project.html?slug=locked-up</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://noemieducly.com/project/swat-team</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://noemieducly.com/project/la-feve</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://noemieducly.com/project/to-make-wood</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://noemieducly.com/project/2026</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://noemieducly.com/project/the-pursuit-is-endless</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://noemieducly.com/project/hublot</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://noemieducly.com/project/to-make-metal</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://noemieducly.com/project/to-make-minerals</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://noemieducly.com/project/to-make-pigments</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://noemieducly.com/project/rcr-g2</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://noemieducly.com/project/les-exceptions</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://noemieducly.com/project/off-the-room-2</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://noemieducly.com/project/mal-aimes</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://noemieducly.com/project/to-make-prints</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
+  <url><loc>https://noemieducly.com/project/locked-up</loc><changefreq>monthly</changefreq><priority>0.8</priority></url>
 
 </urlset>

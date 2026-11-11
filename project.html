@@ -2,11 +2,15 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <!-- La page est servie sous /project/<slug> : sans cette base, les chemins
+       relatifs (style.css, data.js, assets/...) seraient cherches dans
+       /project/ et casseraient. -->
+  <base href="/" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Film | Noemie Ducly</title>
   <meta name="description" content="Project by Noemie Ducly — Creative Director & CGI Artist based in Paris." />
   <meta property="og:type" content="website" />
-  <meta property="og:url" content="https://noemieducly.com/project.html" />
+  <meta property="og:url" content="https://noemieducly.com/work" />
   <meta property="og:title" content="Noemie Ducly — Creative Director & CGI Artist" />
   <meta property="og:description" content="Project by Noemie Ducly — Creative Director & CGI Artist based in Paris." />
   <meta property="og:image" content="https://noemieducly.com/og-image.jpg" />
@@ -399,8 +403,10 @@
       return a;
     }
 
+    // Adresse propre /project/<slug>, avec repli sur l'ancien ?slug=
     const params = new URLSearchParams(window.location.search);
-    const slug = params.get('slug');
+    const pathMatch = window.location.pathname.match(/^\/project\/([^/]+)\/?$/);
+    const slug = pathMatch ? decodeURIComponent(pathMatch[1]) : params.get('slug');
     const video = document.getElementById('main-video');
     const btnClose = document.getElementById('btn-close');
     const btnPlay = document.getElementById('btn-play');
@@ -421,7 +427,7 @@
       document.title = projectData.title + ' | Noemie Ducly';
       // Une adresse canonique par projet (pas de balise fixe dans <head> :
       // elle ferait croire a Google que tous les projets sont la meme page).
-      const canonicalUrl = 'https://noemieducly.com/project.html?slug=' + encodeURIComponent(projectData.slug);
+      const canonicalUrl = 'https://noemieducly.com/project/' + encodeURIComponent(projectData.slug);
       const canonical = document.createElement('link');
       canonical.rel = 'canonical';
       canonical.href = canonicalUrl;
@@ -591,11 +597,11 @@
       const next = FEATURED_PROJECTS[nextIndex];
       const prev = FEATURED_PROJECTS[prevIndex];
       ['nav-next', 'nav-next-top'].forEach(id => {
-        document.getElementById(id).href = 'project.html?slug=' + next.slug;
+        document.getElementById(id).href = '/project/' + next.slug;
         document.getElementById(id).textContent = next.client + ' \u2014 ' + next.title;
       });
       ['nav-prev', 'nav-prev-top'].forEach(id => {
-        document.getElementById(id).href = 'project.html?slug=' + prev.slug;
+        document.getElementById(id).href = '/project/' + prev.slug;
         document.getElementById(id).textContent = prev.client + ' \u2014 ' + prev.title;
       });
 
@@ -616,7 +622,7 @@
 
     // Close
     btnClose.addEventListener('click', () => {
-      window.location.href = 'work.html';
+      window.location.href = '/work';
     });
 
     // Play / Pause

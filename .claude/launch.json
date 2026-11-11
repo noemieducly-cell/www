@@ -4,7 +4,7 @@
     {
       "name": "Static Site (Python)",
       "runtimeExecutable": "python",
-      "runtimeArgs": ["-m", "http.server", "5500", "--directory", "."],
+      "runtimeArgs": [".claude/dev_server.py", "5500"],
       "port": 5500
     }
   ]
