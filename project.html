@@ -419,6 +419,15 @@
 
     if (projectData) {
       document.title = projectData.title + ' | Noemie Ducly';
+      // Une adresse canonique par projet (pas de balise fixe dans <head> :
+      // elle ferait croire a Google que tous les projets sont la meme page).
+      const canonicalUrl = 'https://noemieducly.com/project.html?slug=' + encodeURIComponent(projectData.slug);
+      const canonical = document.createElement('link');
+      canonical.rel = 'canonical';
+      canonical.href = canonicalUrl;
+      document.head.appendChild(canonical);
+      const ogUrl = document.querySelector('meta[property="og:url"]');
+      if (ogUrl) ogUrl.content = canonicalUrl;
       document.querySelector('meta[name="description"]').content = projectData.client + ' — ' + projectData.title + '. ' + (projectData.description || '').split('\n')[0] + ' | Noemie Ducly';
       playerDirector.textContent = projectData.client;
       playerProject.textContent = projectData.title;
