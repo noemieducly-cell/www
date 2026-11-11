@@ -64,7 +64,7 @@ SUCCESS = "#30d158"
 DANGER  = "#ff453a"
 
 TAGS_DEFAULT = [
-    "Creative Direction", "CGI", "VFX",
+    "Creative Direction", "CGI",
     "Photography", "Motion Design", "Film",
 ]
 
