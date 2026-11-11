@@ -356,7 +356,7 @@ const AWARDS = [
 ];
 
 const CONTACT = {
-  intro: "Paris-based Creative director and VFX artist. Sometimes exploring photography, video and graphic design.",
+  intro: "Paris-based Creative director and VFX artist.<br>Sometimes exploring photography, video and graphic design.",
   inquiries: [
     { label: "General Inquiries", email: "noemie.ducly@gmail.com" },
     { label: "Instagram", email: "@noemieducly" },
